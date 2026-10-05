@@ -101,6 +101,7 @@ class _MenuPresenterState extends State<MenuPresenter> {
     final name = nameController.text.trim();
     final price = double.tryParse(priceController.text.trim());
 
+    // TODO: Consolidate form editing state (split between StatefulWidget controllers and MenuEditorCubit) and move validation logic out of UI into domain/Cubit.
     // Clear previous errors
     setState(() {
       _nameError = null;
@@ -216,6 +217,7 @@ class _MenuPresenterState extends State<MenuPresenter> {
                 ),
               );
             } else {
+              // TODO: Simplify 'switch (state)' menuModel extraction once MenuState handles data state consistently without duplicating menuModel across state types.
               final menuModel = switch (state) {
                 MenuLoaded() => state.menuModel,
                 MenuActionSuccess() => state.menuModel,

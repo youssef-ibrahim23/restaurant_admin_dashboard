@@ -43,6 +43,7 @@ class SectionsBloc extends Bloc<SectionsEvent, SectionsState> {
     AddSection event,
     Emitter<SectionsState> emit,
   ) async {
+    // TODO: Avoid emitting global SectionsLoading state before refetching during item mutations, as it replaces the full UI table with a spinner. Consider optimistic state updates or non-blocking loading states.
     emit(SectionsLoading());
     try {
       await insertSectionUseCase(sectionModel: event.sectionModel);

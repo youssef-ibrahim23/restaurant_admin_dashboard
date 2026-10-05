@@ -1,3 +1,4 @@
+// TODO: Implement Equatable (or override == and hashCode) so Bloc emits evaluate state equality properly.
 class MenuEditorState {
   final int? selectedItemIndex;
   final String selectedCategory;

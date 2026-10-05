@@ -47,6 +47,7 @@ class RestaurantsPresenter extends StatelessWidget {
           );
         }
 
+        // TODO: Move BlocProvider above the conditional BlocSelector builder to prevent recreating the SectionsBloc instance whenever selectedSection changes.
         return BlocProvider(
           create: (context) => sl<SectionsBloc>()..add(LoadSections()),
           child: BlocListener<SectionsBloc, SectionsState>(

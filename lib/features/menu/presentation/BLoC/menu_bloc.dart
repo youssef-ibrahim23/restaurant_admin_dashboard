@@ -109,6 +109,7 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
     }
   }
 
+  // TODO: Eliminate helper getter '_currentMenuModel' once state hierarchy is refactored to maintain persistent menuModel state.
   MenuModel? get _currentMenuModel {
     final currentState = state;
     if (currentState is MenuLoaded) return currentState.menuModel;

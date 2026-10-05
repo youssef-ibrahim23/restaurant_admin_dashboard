@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'menu_editor_state.dart';
 
+// TODO: use Bloc as the rest so the whole project has a unified state management solution.
 class MenuEditorCubit extends Cubit<MenuEditorState> {
   MenuEditorCubit() : super(const MenuEditorState());
 

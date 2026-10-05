@@ -1,5 +1,6 @@
 import 'package:restaurant_admin_dashboard/features/restaurant_sections/data/model/section_model.dart';
 
+// TODO: Implement Equatable (or override == and hashCode) so Bloc can compare states and prevent unnecessary UI rebuilds.
 class SidebarState {
   final int selectedIndex;
   final SectionModel? selectedSection;

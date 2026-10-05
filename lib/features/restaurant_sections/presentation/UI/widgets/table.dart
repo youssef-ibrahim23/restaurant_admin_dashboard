@@ -44,6 +44,7 @@ class RestaurantsTable extends StatelessWidget {
           );
         }
 
+        // TODO: Refactor state checking once SectionActionSuccess is decoupled from data state; avoid conditional casting (state is SectionsLoaded vs SectionActionSuccess).
         if (state is SectionsLoaded || state is SectionActionSuccess) {
           final sections = state is SectionsLoaded
               ? state.sections

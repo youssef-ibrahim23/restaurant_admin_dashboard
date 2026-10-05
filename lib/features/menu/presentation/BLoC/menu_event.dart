@@ -1,5 +1,6 @@
 import '../../data/model/menu_item_model.dart';
 
+// TODO: Implement Equatable for MenuEvent subclasses to optimize event emission checks.
 sealed class MenuEvent {}
 
 final class LoadMenuItems extends MenuEvent {

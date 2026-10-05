@@ -1,6 +1,7 @@
 
 import '../../data/model/section_model.dart';
 
+// TODO: Implement Equatable for SectionsEvent subclasses to ensure proper event value comparison.
 sealed class SectionsEvent {}
 
 final class LoadSections extends SectionsEvent {}
