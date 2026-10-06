@@ -19,38 +19,37 @@ class RestaurantsPresenter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<SidebarBloc, SidebarState, SectionModel?>(
-      selector: (state) => state.selectedSection,
-      builder: (context, selectedSection) {
-        if (selectedSection != null) {
-          return Scaffold(
-            backgroundColor: const Color(0xFFF7F4EF),
-            appBar: AppBar(
-              surfaceTintColor: const Color(0xFFF7F4EF),
+    return BlocProvider(
+      create: (context) => sl<SectionsBloc>()..add(LoadSections()),
+      child: BlocSelector<SidebarBloc, SidebarState, SectionModel?>(
+        selector: (state) => state.selectedSection,
+        builder: (context, selectedSection) {
+          if (selectedSection != null) {
+            return Scaffold(
               backgroundColor: const Color(0xFFF7F4EF),
-              elevation: 0,
-              leading: IconButton(
-                icon: Icon(
-                  Icons.arrow_back_ios,
-                  size: 20.sp,
-                  color: const Color(0xFF211E1C),
+              appBar: AppBar(
+                surfaceTintColor: const Color(0xFFF7F4EF),
+                backgroundColor: const Color(0xFFF7F4EF),
+                elevation: 0,
+                leading: IconButton(
+                  icon: Icon(
+                    Icons.arrow_back_ios,
+                    size: 20.sp,
+                    color: const Color(0xFF211E1C),
+                  ),
+                  onPressed: () {
+                    context.read<SidebarBloc>().add(SectionMenuBack());
+                  },
                 ),
-                onPressed: () {
-                  context.read<SidebarBloc>().add(SectionMenuBack());
-                },
               ),
-            ),
-            body: MenuPresenter(
-              sectionModel: selectedSection,
-              showScaffold: false,
-            ),
-          );
-        }
+              body: MenuPresenter(
+                sectionModel: selectedSection,
+                showScaffold: false,
+              ),
+            );
+          }
 
-        // TODO: Move BlocProvider above the conditional BlocSelector builder to prevent recreating the SectionsBloc instance whenever selectedSection changes.
-        return BlocProvider(
-          create: (context) => sl<SectionsBloc>()..add(LoadSections()),
-          child: BlocListener<SectionsBloc, SectionsState>(
+          return BlocListener<SectionsBloc, SectionsState>(
             listener: (context, state){
               if (state is SectionActionSuccess) {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -95,15 +94,16 @@ class RestaurantsPresenter extends StatelessWidget {
                           ],
                         ),
                       ),
-                      if (state is SectionsLoading) Loading(),
+                      // Only show loading spinner on initial load (when sections is empty)
+                      if (state is SectionsLoading && state.sections.isEmpty) Loading(),
                     ],
                   );
                 },
               ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }

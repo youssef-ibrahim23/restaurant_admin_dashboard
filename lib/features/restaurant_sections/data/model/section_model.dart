@@ -1,4 +1,6 @@
-class SectionModel {
+import 'package:equatable/equatable.dart';
+
+class SectionModel extends Equatable {
   final int id;
   final String name;
   final bool isOpen;
@@ -24,4 +26,7 @@ class SectionModel {
       'is_open': isOpen,
     };
   }
+
+  @override
+  List<Object?> get props => [id, name, isOpen];
 }

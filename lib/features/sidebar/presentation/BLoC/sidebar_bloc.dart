@@ -6,13 +6,11 @@ import 'sidebar_state.dart';
 class SidebarBloc extends Bloc<SidebarEvent, SidebarState> {
   SidebarBloc() : super(const SidebarState()) {
 
-    // TODO: Remove redundant parentheses around event handler '_onSidebarItemSelected'.
-    on<SidebarItemSelected>((_onSidebarItemSelected));
+    on<SidebarItemSelected>(_onSidebarItemSelected);
 
     on<SectionMenuSelected>(_onSectionMenuSelected);
 
     on<SectionMenuBack>(_onSectionMenuBack);
-
   }
 
   void _onSidebarItemSelected(

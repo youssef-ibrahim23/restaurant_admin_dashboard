@@ -1,28 +1,56 @@
+import 'package:equatable/equatable.dart';
 import 'package:restaurant_admin_dashboard/features/restaurant_sections/data/model/section_model.dart';
 
-// TODO: Implement Equatable across all SectionsState subclasses so Bloc can determine value equality.
-sealed class SectionsState {}
+// Base class containing persistent data state (sections list)
+sealed class SectionsState extends Equatable {
+  final List<SectionModel> sections;
+  final bool isLoading;
 
-final class SectionsInitial extends SectionsState {}
+  const SectionsState({
+    this.sections = const [],
+    this.isLoading = false,
+  });
 
-final class SectionsLoading extends SectionsState {}
+  @override
+  List<Object?> get props => [sections, isLoading];
+}
+
+final class SectionsInitial extends SectionsState {
+  const SectionsInitial();
+}
+
+final class SectionsLoading extends SectionsState {
+  const SectionsLoading({
+    super.sections,
+  }) : super(isLoading: true);
+}
 
 final class SectionsLoaded extends SectionsState {
-  final List<SectionModel> sections;
-
-  SectionsLoaded({required this.sections});
+  const SectionsLoaded({
+    required super.sections,
+  });
 }
 
 final class SectionsError extends SectionsState {
   final String message;
 
-  SectionsError({required this.message});
+  const SectionsError({
+    required this.message,
+    super.sections,
+  });
+
+  @override
+  List<Object?> get props => [...super.props, message];
 }
 
-// TODO: Avoid state pollution by separating transient side-effects (e.g. action success toast message) from persistent data state (SectionsLoaded), preventing redundant duplicate data classes.
 final class SectionActionSuccess extends SectionsState {
   final String message;
-  final List<SectionModel> sections;
 
-  SectionActionSuccess({required this.message, required this.sections});
+  const SectionActionSuccess({
+    required this.message,
+    required super.sections,
+  });
+
+  @override
+  List<Object?> get props => [...super.props, message];
 }

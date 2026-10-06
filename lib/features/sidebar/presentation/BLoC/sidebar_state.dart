@@ -1,11 +1,14 @@
+import 'package:equatable/equatable.dart';
 import 'package:restaurant_admin_dashboard/features/restaurant_sections/data/model/section_model.dart';
 
-// TODO: Implement Equatable (or override == and hashCode) so Bloc can compare states and prevent unnecessary UI rebuilds.
-class SidebarState {
+class SidebarState extends Equatable {
   final int selectedIndex;
   final SectionModel? selectedSection;
 
-  const SidebarState({this.selectedIndex = 0, this.selectedSection});
+  const SidebarState({
+    this.selectedIndex = 0,
+    this.selectedSection,
+  });
 
   SidebarState copyWith({
     int? selectedIndex,
@@ -19,4 +22,10 @@ class SidebarState {
           : selectedSection ?? this.selectedSection,
     );
   }
+
+  @override
+  List<Object?> get props => [
+    selectedIndex,
+    selectedSection,
+  ];
 }

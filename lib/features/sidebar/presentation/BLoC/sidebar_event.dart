@@ -1,18 +1,31 @@
+import 'package:equatable/equatable.dart';
 import 'package:restaurant_admin_dashboard/features/restaurant_sections/data/model/section_model.dart';
 
-// TODO: Change 'abstract class' to 'sealed class' to leverage Dart 3 exhaustive pattern matching and implement Equatable for events.
-abstract class SidebarEvent {}
+sealed class SidebarEvent extends Equatable {
+  const SidebarEvent();
 
-class SidebarItemSelected extends SidebarEvent {
+  @override
+  List<Object?> get props => [];
+}
+
+final class SidebarItemSelected extends SidebarEvent {
   final int index;
 
-  SidebarItemSelected(this.index);
+  const SidebarItemSelected(this.index);
+
+  @override
+  List<Object?> get props => [index];
 }
 
-class SectionMenuSelected extends SidebarEvent {
+final class SectionMenuSelected extends SidebarEvent {
   final SectionModel section;
 
-  SectionMenuSelected(this.section);
+  const SectionMenuSelected(this.section);
+
+  @override
+  List<Object?> get props => [section];
 }
 
-class SectionMenuBack extends SidebarEvent {}
+final class SectionMenuBack extends SidebarEvent {
+  const SectionMenuBack();
+}

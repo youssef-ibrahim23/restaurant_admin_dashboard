@@ -27,6 +27,7 @@ class MenuTextField extends StatelessWidget {
   final String hint;
   final TextInputType? keyboardType;
   final String? errorText;
+  final ValueChanged<String>? onChanged;
 
   const MenuTextField({
     super.key,
@@ -34,6 +35,7 @@ class MenuTextField extends StatelessWidget {
     required this.hint,
     this.keyboardType,
     this.errorText,
+    this.onChanged,
   });
 
   @override
@@ -49,6 +51,7 @@ class MenuTextField extends StatelessWidget {
             fontSize: 11.sp,
             color: const Color(0xFF38332F),
           ),
+          onChanged: onChanged,
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: TextStyle(

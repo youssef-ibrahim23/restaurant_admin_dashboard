@@ -5,11 +5,11 @@ import 'menu_category_dropdown.dart';
 import 'menu_photo_picture.dart';
 import 'menu_text_field.dart';
 
-class MenuEditPanel extends StatelessWidget {
+class MenuEditPanel extends StatefulWidget {
   final bool editing;
 
-  final TextEditingController nameController;
-  final TextEditingController priceController;
+  final String name;
+  final String price;
 
   final String selectedCategory;
   final bool isAvailable;
@@ -21,6 +21,8 @@ class MenuEditPanel extends StatelessWidget {
   final ValueChanged<String> onCategoryChanged;
   final ValueChanged<bool> onAvailabilityChanged;
   final ValueChanged<String> onPhotoChanged;
+  final ValueChanged<String> onNameChanged;
+  final ValueChanged<String> onPriceChanged;
 
   final VoidCallback onSave;
   final VoidCallback onCancel;
@@ -28,8 +30,8 @@ class MenuEditPanel extends StatelessWidget {
   const MenuEditPanel({
     super.key,
     required this.editing,
-    required this.nameController,
-    required this.priceController,
+    required this.name,
+    required this.price,
     required this.selectedCategory,
     required this.isAvailable,
     required this.selectedPhoto,
@@ -38,9 +40,44 @@ class MenuEditPanel extends StatelessWidget {
     required this.onCategoryChanged,
     required this.onAvailabilityChanged,
     required this.onPhotoChanged,
+    required this.onNameChanged,
+    required this.onPriceChanged,
     required this.onSave,
     required this.onCancel,
   });
+
+  @override
+  State<MenuEditPanel> createState() => _MenuEditPanelState();
+}
+
+class _MenuEditPanelState extends State<MenuEditPanel> {
+  late TextEditingController nameController;
+  late TextEditingController priceController;
+
+  @override
+  void initState() {
+    super.initState();
+    nameController = TextEditingController(text: widget.name);
+    priceController = TextEditingController(text: widget.price);
+  }
+
+  @override
+  void didUpdateWidget(MenuEditPanel oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.name != nameController.text) {
+      nameController.text = widget.name;
+    }
+    if (widget.price != priceController.text) {
+      priceController.text = widget.price;
+    }
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    priceController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +91,7 @@ class MenuEditPanel extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            editing ? 'Edit item' : 'Add item',
+            widget.editing ? 'Edit item' : 'Add item',
             style: TextStyle(
               fontSize: 15.sp,
               fontWeight: FontWeight.w800,
@@ -64,8 +101,8 @@ class MenuEditPanel extends StatelessWidget {
           SizedBox(height: 12.h),
 
           MenuPhotoPicker(
-            selectedIcon: selectedPhoto,
-            onIconChanged: onPhotoChanged,
+            selectedIcon: widget.selectedPhoto,
+            onIconChanged: widget.onPhotoChanged,
           ),
 
           SizedBox(height: 10.h),
@@ -79,7 +116,8 @@ class MenuEditPanel extends StatelessWidget {
           MenuTextField(
             controller: nameController,
             hint: 'Double Smash',
-            errorText: nameError,
+            errorText: widget.nameError,
+            onChanged: widget.onNameChanged,
           ),
 
           SizedBox(height: 9.h),
@@ -94,7 +132,8 @@ class MenuEditPanel extends StatelessWidget {
             controller: priceController,
             hint: '145',
             keyboardType: TextInputType.number,
-            errorText: priceError,
+            errorText: widget.priceError,
+            onChanged: widget.onPriceChanged,
           ),
 
           SizedBox(height: 9.h),
@@ -106,8 +145,8 @@ class MenuEditPanel extends StatelessWidget {
           SizedBox(height: 5.h),
 
           MenuCategoryDropdown(
-            value: selectedCategory,
-            onChanged: onCategoryChanged,
+            value: widget.selectedCategory,
+            onChanged: widget.onCategoryChanged,
           ),
 
           SizedBox(height: 9.h),
@@ -120,7 +159,7 @@ class MenuEditPanel extends StatelessWidget {
                 child: SizedBox(
                   height: 48.h,
                   child: ElevatedButton(
-                    onPressed: onSave,
+                    onPressed: widget.onSave,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFFF5A1F),
                       foregroundColor: Colors.white,
@@ -146,7 +185,7 @@ class MenuEditPanel extends StatelessWidget {
                 child: SizedBox(
                   height: 38.h,
                   child: OutlinedButton(
-                    onPressed: onCancel,
+                    onPressed: widget.onCancel,
                     style: OutlinedButton.styleFrom(
                       foregroundColor: const Color(0xFF38332F),
                       side: const BorderSide(

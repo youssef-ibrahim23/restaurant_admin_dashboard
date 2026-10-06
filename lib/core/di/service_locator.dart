@@ -8,7 +8,6 @@ import 'package:restaurant_admin_dashboard/features/menu/domain/usecases/edit_me
 import 'package:restaurant_admin_dashboard/features/menu/domain/usecases/get_menu_items_usecase.dart';
 import 'package:restaurant_admin_dashboard/features/menu/domain/usecases/toggle_menu_item_availability_usecase.dart';
 import 'package:restaurant_admin_dashboard/features/menu/presentation/BLoC/menu_bloc.dart';
-import 'package:restaurant_admin_dashboard/features/menu/presentation/BLoC/menu_editor_cubit.dart';
 import 'package:restaurant_admin_dashboard/features/restaurant_sections/data/repositories/sections_repository_impl.dart';
 import 'package:restaurant_admin_dashboard/features/restaurant_sections/data/service/sections_service.dart';
 import 'package:restaurant_admin_dashboard/features/restaurant_sections/domain/repositories/sections_repository.dart';
@@ -86,5 +85,4 @@ Future<void> setupServiceLocator() async {
           sl<ToggleMenuItemAvailabilityUseCase>(),
     ),
   );
-  sl.registerFactory(() => MenuEditorCubit());
 }

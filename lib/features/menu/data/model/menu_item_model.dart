@@ -1,4 +1,6 @@
-class MenuItemModel {
+import 'package:equatable/equatable.dart';
+
+class MenuItemModel extends Equatable {
   final int? id;
   final int sectionId;
   final String photo;
@@ -42,4 +44,15 @@ class MenuItemModel {
       'is_available': isAvailable,
     };
   }
+
+  @override
+  List<Object?> get props => [
+        id,
+        sectionId,
+        photo,
+        name,
+        price,
+        category,
+        isAvailable,
+      ];
 }

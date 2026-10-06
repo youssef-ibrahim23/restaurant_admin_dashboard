@@ -1,37 +1,106 @@
+import 'package:equatable/equatable.dart';
 import '../../data/model/menu_model.dart';
 
-// TODO: Change 'class MenuState' to 'sealed class MenuState' for Dart 3 exhaustive pattern matching and implement Equatable across all state classes.
-class MenuState {}
-
-class MenuInitial extends MenuState {}
-
-class MenuLoading extends MenuState {
+// Base class containing persistent data state (menuModel and editor fields)
+sealed class MenuState extends Equatable {
   final MenuModel? menuModel;
+  final int? selectedItemIndex;
+  final String selectedCategory;
+  final bool isAvailable;
+  final String selectedPhoto;
+  final String name;
+  final String price;
+  final String? nameError;
+  final String? priceError;
 
-  MenuLoading({this.menuModel});
+  const MenuState({
+    this.menuModel,
+    this.selectedItemIndex,
+    this.selectedCategory = 'Burger',
+    this.isAvailable = true,
+    this.selectedPhoto = '🍔',
+    this.name = '',
+    this.price = '',
+    this.nameError,
+    this.priceError,
+  });
+
+  @override
+  List<Object?> get props => [
+        menuModel,
+        selectedItemIndex,
+        selectedCategory,
+        isAvailable,
+        selectedPhoto,
+        name,
+        price,
+        nameError,
+        priceError,
+      ];
 }
 
-class MenuLoaded extends MenuState {
-  final MenuModel menuModel;
-
-  MenuLoaded({required this.menuModel});
+final class MenuInitial extends MenuState {
+  const MenuInitial();
 }
 
-class MenuError extends MenuState {
+final class MenuLoading extends MenuState {
+  const MenuLoading({
+    super.menuModel,
+    super.selectedItemIndex,
+    super.selectedCategory,
+    super.isAvailable,
+    super.selectedPhoto,
+    super.name,
+    super.price,
+    super.nameError,
+    super.priceError,
+  });
+}
+
+final class MenuLoaded extends MenuState {
+  const MenuLoaded({
+    required super.menuModel,
+    super.selectedItemIndex,
+    super.selectedCategory,
+    super.isAvailable,
+    super.selectedPhoto,
+    super.name,
+    super.price,
+    super.nameError,
+    super.priceError,
+  });
+}
+
+final class MenuError extends MenuState {
   final String message;
 
-  MenuError({required this.message});
+  const MenuError({
+    required this.message,
+    super.menuModel,
+  });
+
+  @override
+  List<Object?> get props => [...super.props, message];
 }
 
-// TODO: Decouple one-shot side-effect parameters (message, shouldClearForm) from persistent data state (menuModel) to prevent state duplication across MenuLoaded, MenuLoading, and MenuActionSuccess.
-class MenuActionSuccess extends MenuState {
+final class MenuActionSuccess extends MenuState {
   final String message;
-  final MenuModel menuModel;
   final bool shouldClearForm;
 
-  MenuActionSuccess({
+  const MenuActionSuccess({
     required this.message,
-    required this.menuModel,
+    required super.menuModel,
     this.shouldClearForm = false,
+    super.selectedItemIndex,
+    super.selectedCategory,
+    super.isAvailable,
+    super.selectedPhoto,
+    super.name,
+    super.price,
+    super.nameError,
+    super.priceError,
   });
+
+  @override
+  List<Object?> get props => [...super.props, message, shouldClearForm];
 }

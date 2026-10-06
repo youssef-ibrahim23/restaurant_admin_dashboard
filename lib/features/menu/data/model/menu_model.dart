@@ -1,6 +1,7 @@
+import 'package:equatable/equatable.dart';
 import 'package:restaurant_admin_dashboard/features/menu/data/model/menu_item_model.dart';
 
-class MenuModel {
+class MenuModel extends Equatable {
   final List<MenuItemModel> items;
 
   const MenuModel({
@@ -24,4 +25,7 @@ class MenuModel {
         .map((item) => item.toJson())
         .toList();
   }
+
+  @override
+  List<Object?> get props => [items];
 }
