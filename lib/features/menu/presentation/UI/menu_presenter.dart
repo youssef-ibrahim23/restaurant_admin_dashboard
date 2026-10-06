@@ -53,15 +53,6 @@ class _MenuPresenterState extends State<MenuPresenter> {
     MenuState state,
   ) {
     context.read<MenuBloc>().add(ValidateEditorForm());
-    
-    // We need to check the state after validation, but BlocListener will handle errors
-    // For now, we'll validate inline and only proceed if valid
-    final nameError = _validateName(state.name);
-    final priceError = _validatePrice(state.price);
-
-    if (nameError != null || priceError != null) {
-      return;
-    }
 
     final price = double.tryParse(state.price.trim())!;
 
