@@ -112,4 +112,20 @@ Future<void> setupServiceLocator() async {
       getCustomersUseCase: sl<GetCustomersUseCase>(),
     ),
   );
+
+  // customers feature
+  sl.registerLazySingleton<CustomersService>(
+    () => CustomersService(supabaseClientService: sl<SupabaseClientService>()),
+  );
+  sl.registerLazySingleton<CustomersRepository>(
+    () => CustomersRepositoryImpl(customersService: sl<CustomersService>()),
+  );
+  sl.registerLazySingleton(
+    () => GetCustomersUseCase(customersRepository: sl<CustomersRepository>()),
+  );
+  sl.registerFactory(
+    () => CustomersBloc(
+      getCustomersUseCase: sl<GetCustomersUseCase>(),
+    ),
+  );
 }
