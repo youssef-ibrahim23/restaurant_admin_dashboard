@@ -18,6 +18,12 @@ import 'package:restaurant_admin_dashboard/features/restaurant_sections/domain/u
 import 'package:restaurant_admin_dashboard/features/restaurant_sections/presentation/BLoC/sections_bloc.dart';
 import 'package:restaurant_admin_dashboard/features/sidebar/presentation/BLoC/sidebar_bloc.dart';
 
+import '../../features/customers/data/repositories/customers_repository_impl.dart';
+import '../../features/customers/data/service/customers_service.dart';
+import '../../features/customers/domain/repositories/customers_repository.dart';
+import '../../features/customers/domain/usecases/get_customers_usecase.dart';
+import '../../features/customers/presentation/BLoC/customers_bloc.dart';
+
 final GetIt sl = GetIt.instance;
 
 Future<void> setupServiceLocator() async {
@@ -83,6 +89,22 @@ Future<void> setupServiceLocator() async {
       editMenuItemUseCase: sl<EditMenuItemUseCase>(),
       toggleMenuItemAvailabilityUseCase:
           sl<ToggleMenuItemAvailabilityUseCase>(),
+    ),
+  );
+
+  // customers feature
+  sl.registerLazySingleton<CustomersService>(
+    () => CustomersService(supabaseClientService: sl<SupabaseClientService>()),
+  );
+  sl.registerLazySingleton<CustomersRepository>(
+    () => CustomersRepositoryImpl(customersService: sl<CustomersService>()),
+  );
+  sl.registerLazySingleton(
+    () => GetCustomersUseCase(customersRepository: sl<CustomersRepository>()),
+  );
+  sl.registerFactory(
+    () => CustomersBloc(
+      getCustomersUseCase: sl<GetCustomersUseCase>(),
     ),
   );
 }
