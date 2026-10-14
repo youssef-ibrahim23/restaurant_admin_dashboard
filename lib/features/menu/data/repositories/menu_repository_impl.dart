@@ -31,4 +31,9 @@ class MenuRepositoryImpl implements MenuRepository {
   }) async {
     await menuService.toggleAvailability(id: id, isAvailable: isAvailable);
   }
+
+  @override
+  Future<void> deleteItem({required int id}) async {
+    await menuService.deleteItem(id: id);
+  }
 }

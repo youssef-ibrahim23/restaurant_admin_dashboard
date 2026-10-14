@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:restaurant_admin_dashboard/features/restaurant_sections/data/model/section_model.dart';
 
 sealed class SidebarEvent extends Equatable {
   const SidebarEvent();
@@ -15,17 +14,4 @@ final class SidebarItemSelected extends SidebarEvent {
 
   @override
   List<Object?> get props => [index];
-}
-
-final class SectionMenuSelected extends SidebarEvent {
-  final SectionModel section;
-
-  const SectionMenuSelected(this.section);
-
-  @override
-  List<Object?> get props => [section];
-}
-
-final class SectionMenuBack extends SidebarEvent {
-  const SectionMenuBack();
 }

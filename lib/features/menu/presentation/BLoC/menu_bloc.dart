@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_admin_dashboard/features/menu/domain/usecases/add_menu_item_usecase.dart';
+import 'package:restaurant_admin_dashboard/features/menu/domain/usecases/delete_menu_item_usecase.dart';
 import 'package:restaurant_admin_dashboard/features/menu/domain/usecases/edit_menu_item_usecase.dart';
 import 'package:restaurant_admin_dashboard/features/menu/domain/usecases/get_menu_items_usecase.dart';
 import 'package:restaurant_admin_dashboard/features/menu/domain/usecases/toggle_menu_item_availability_usecase.dart';
@@ -12,19 +13,21 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
   final AddMenuItemUseCase addMenuItemUseCase;
   final EditMenuItemUseCase editMenuItemUseCase;
   final ToggleMenuItemAvailabilityUseCase toggleMenuItemAvailabilityUseCase;
+  final DeleteMenuItemUseCase deleteMenuItemUseCase;
 
   MenuBloc({
     required this.getMenuItemsUseCase,
     required this.addMenuItemUseCase,
     required this.editMenuItemUseCase,
     required this.toggleMenuItemAvailabilityUseCase,
+    required this.deleteMenuItemUseCase,
   }) :
        super(const MenuInitial()) {
     on<LoadMenuItems>(_onLoadMenuItems);
     on<AddMenuItem>(_onAddMenuItem);
     on<EditMenuItem>(_onEditMenuItem);
+    on<DeleteMenuItem>(_onDeleteMenuItem);
     on<ToggleMenuItemAvailability>(_onToggleMenuItemAvailability);
-    // TODO: Missing on<DeleteMenuItem> handler. DeleteMenuItem is defined in menu_event.dart, but will crash if dispatched.
     on<SelectEditorItem>(_onSelectEditorItem);
     on<SelectEditorCategory>(_onSelectEditorCategory);
     on<SetEditorAvailability>(_onSetEditorAvailability);
@@ -74,7 +77,6 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
       emit(MenuActionSuccess(
         message: 'Menu item added successfully',
         menuModel: menu,
-        shouldClearForm: true,
         selectedItemIndex: state.selectedItemIndex,
         selectedCategory: state.selectedCategory,
         isAvailable: state.isAvailable,
@@ -105,7 +107,34 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
       emit(MenuActionSuccess(
         message: 'Menu item updated successfully',
         menuModel: menu,
-        shouldClearForm: true,
+        selectedItemIndex: state.selectedItemIndex,
+        selectedCategory: state.selectedCategory,
+        isAvailable: state.isAvailable,
+        selectedPhoto: state.selectedPhoto,
+        name: state.name,
+        price: state.price,
+        nameError: state.nameError,
+        priceError: state.priceError,
+      ));
+    } catch (e) {
+      emit(MenuError(
+        message: e.toString(),
+        menuModel: state.menuModel,
+      ));
+    }
+  }
+
+  Future<void> _onDeleteMenuItem(
+    DeleteMenuItem event,
+    Emitter<MenuState> emit,
+  ) async {
+    emit(MenuLoading(menuModel: state.menuModel));
+    try {
+      await deleteMenuItemUseCase(id: event.id);
+      final menu = await getMenuItemsUseCase(sectionId: event.sectionId);
+      emit(MenuActionSuccess(
+        message: 'Menu item deleted successfully',
+        menuModel: menu,
         selectedItemIndex: state.selectedItemIndex,
         selectedCategory: state.selectedCategory,
         isAvailable: state.isAvailable,
@@ -166,7 +195,6 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
         ? MenuActionSuccess(
             message: currentState.message,
             menuModel: currentState.menuModel,
-            shouldClearForm: currentState.shouldClearForm,
             selectedItemIndex: event.index,
             selectedCategory: event.category,
             isAvailable: event.isAvailable,
@@ -259,14 +287,11 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
     String? nameError,
     String? priceError,
   }) {
-    // TODO: If the current state is MenuLoading, this forces it to MenuLoaded, hiding the spinner.
-    // Also, if currentState is MenuActionSuccess, typing keeps emitting MenuActionSuccess with old messages.
     final currentState = state;
     final newState = currentState is MenuActionSuccess
         ? MenuActionSuccess(
             message: currentState.message,
             menuModel: currentState.menuModel,
-            shouldClearForm: currentState.shouldClearForm,
             selectedItemIndex: selectedItemIndex ?? currentState.selectedItemIndex,
             selectedCategory: selectedCategory ?? currentState.selectedCategory,
             isAvailable: isAvailable ?? currentState.isAvailable,

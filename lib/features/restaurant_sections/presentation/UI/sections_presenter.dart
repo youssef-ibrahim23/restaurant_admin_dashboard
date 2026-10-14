@@ -10,9 +10,6 @@ import 'package:restaurant_admin_dashboard/features/restaurant_sections/presenta
 import 'package:restaurant_admin_dashboard/features/restaurant_sections/presentation/UI/widgets/header.dart';
 import 'package:restaurant_admin_dashboard/features/restaurant_sections/presentation/UI/widgets/table.dart';
 import 'package:restaurant_admin_dashboard/features/menu/presentation/UI/menu_presenter.dart';
-import 'package:restaurant_admin_dashboard/features/sidebar/presentation/BLoC/sidebar_bloc.dart';
-import 'package:restaurant_admin_dashboard/features/sidebar/presentation/BLoC/sidebar_event.dart';
-import 'package:restaurant_admin_dashboard/features/sidebar/presentation/BLoC/sidebar_state.dart';
 
 class RestaurantsPresenter extends StatelessWidget {
   const RestaurantsPresenter({super.key});
@@ -21,90 +18,85 @@ class RestaurantsPresenter extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => sl<SectionsBloc>()..add(LoadSections()),
-      // TODO: Avoid using SidebarBloc to navigate between Sections and Menu. Use standard Flutter navigation (e.g., Navigator or GoRouter) to keep features decoupled.
-      child: BlocSelector<SidebarBloc, SidebarState, SectionModel?>(
-        selector: (state) => state.selectedSection,
-        builder: (context, selectedSection) {
-          if (selectedSection != null) {
-            return Scaffold(
-              backgroundColor: const Color(0xFFF7F4EF),
-              appBar: AppBar(
-                surfaceTintColor: const Color(0xFFF7F4EF),
-                backgroundColor: const Color(0xFFF7F4EF),
-                elevation: 0,
-                leading: IconButton(
-                  icon: Icon(
-                    Icons.arrow_back_ios,
-                    size: 20.sp,
-                    color: const Color(0xFF211E1C),
-                  ),
-                  onPressed: () {
-                    context.read<SidebarBloc>().add(SectionMenuBack());
-                  },
-                ),
+      child: BlocListener<SectionsBloc, SectionsState>(
+        listener: (context, state){
+          if (state is SectionActionSuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: const Color(0xFF239B56),
+                duration: const Duration(seconds: 2),
               ),
-              body: MenuPresenter(
-                sectionModel: selectedSection,
-                showScaffold: false,
+            );
+            context.read<SectionsBloc>().add(LoadSections());
+          } else if (state is SectionsError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: const Color(0xFFD64545),
+                duration: const Duration(seconds: 3),
               ),
             );
           }
-
-          return BlocListener<SectionsBloc, SectionsState>(
-            listener: (context, state){
-              if (state is SectionActionSuccess) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.message),
-                    backgroundColor: const Color(0xFF239B56),
-                    duration: const Duration(seconds: 2),
-                  ),
-                );
-              } else if (state is SectionsError) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.message),
-                    backgroundColor: const Color(0xFFD64545),
-                    duration: const Duration(seconds: 3),
-                  ),
-                );
-              }
-            },
-            child: Scaffold(
-              backgroundColor: const Color(0xFFF7F5F1),
-              // TODO: Rebuilding Header and Table on every state change is unnecessary because RestaurantsTable has its own BlocBuilder. Scope this builder only to the loading overlay.
-              body: BlocBuilder<SectionsBloc, SectionsState>(
-                builder: (context, state) {
-                  return Stack(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.all(32.w),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Header(),
-                            SizedBox(height: 28.h),
-                            Expanded(
-                              child: RestaurantsTable(
-                                onManageMenu: (section) {
-                                  context.read<SidebarBloc>().add(
-                                    SectionMenuSelected(section),
-                                  );
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      // Only show loading spinner on initial load (when sections is empty)
-                      if (state is SectionsLoading && state.sections.isEmpty) Loading(),
-                    ],
-                  );
-                },
-              ),
-            ),
-          );
         },
+        child: Scaffold(
+          backgroundColor: const Color(0xFFF7F5F1),
+          body: BlocBuilder<SectionsBloc, SectionsState>(
+            buildWhen: (previous, current) {
+              return previous.isLoading != current.isLoading ||
+                  previous.sections.length != current.sections.length;
+            },
+            builder: (context, state) {
+              return Stack(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(32.w),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Header(),
+                        SizedBox(height: 28.h),
+                        Expanded(
+                          child: RestaurantsTable(
+                            onManageMenu: (section) {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => Scaffold(
+                                    backgroundColor: const Color(0xFFF7F4EF),
+                                    appBar: AppBar(
+                                      surfaceTintColor: const Color(0xFFF7F4EF),
+                                      backgroundColor: const Color(0xFFF7F4EF),
+                                      elevation: 0,
+                                      leading: IconButton(
+                                        icon: Icon(
+                                          Icons.arrow_back_ios,
+                                          size: 20.sp,
+                                          color: const Color(0xFF211E1C),
+                                        ),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                      ),
+                                    ),
+                                    body: MenuPresenter(
+                                      sectionModel: section,
+                                      showScaffold: false,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (state is SectionsLoading && state.sections.isEmpty) Loading(),
+                ],
+              );
+            },
+          ),
+        ),
       ),
     );
   }

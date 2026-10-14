@@ -86,16 +86,12 @@ final class MenuError extends MenuState {
   List<Object?> get props => [...super.props, message];
 }
 
-// TODO: shouldClearForm triggers a ping-pong pattern where UI reacts by immediately sending a ClearEditor event back to Bloc.
-// Form resetting should be handled locally when saving succeeds.
 final class MenuActionSuccess extends MenuState {
   final String message;
-  final bool shouldClearForm;
 
   const MenuActionSuccess({
     required this.message,
     required super.menuModel,
-    this.shouldClearForm = false,
     super.selectedItemIndex,
     super.selectedCategory,
     super.isAvailable,
@@ -107,5 +103,5 @@ final class MenuActionSuccess extends MenuState {
   });
 
   @override
-  List<Object?> get props => [...super.props, message, shouldClearForm];
+  List<Object?> get props => [...super.props, message];
 }

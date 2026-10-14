@@ -11,19 +11,18 @@ import 'widgets/sidebar.dart';
 class SidebarPresenter extends StatelessWidget {
   const SidebarPresenter({super.key});
 
+  static const List<Widget> _screens = [
+    Center(child: Text('Dashboard')),
+    Center(child: Text('Orders')),
+    RestaurantsPresenter(),
+    Center(child: Text('Drivers')),
+    Center(child: Text('Customers')),
+    Center(child: Text('Promos')),
+    Center(child: Text('Settings')),
+  ];
+
   @override
   Widget build(BuildContext context) {
-    // TODO: Move the screens list outside build() or keep it static/const so screens are not rebuilt from scratch on every tab switch.
-    final List<Widget> screens = [
-      const Center(child: Text('Dashboard')),
-      const Center(child: Text('Orders')),
-      const RestaurantsPresenter(),
-      const Center(child: Text('Drivers')),
-      const Center(child: Text('Customers')),
-      const Center(child: Text('Promos')),
-      const Center(child: Text('Settings')),
-    ];
-
     return BlocProvider(
       create: (_) => sl<SidebarBloc>(),
       child: BlocSelector<SidebarBloc, SidebarState, int>(
@@ -39,7 +38,7 @@ class SidebarPresenter extends StatelessWidget {
                   },
                 ),
                 Expanded(
-                  child: IndexedStack(index: selectedIndex, children: screens),
+                  child: IndexedStack(index: selectedIndex, children: _screens),
                 ),
               ],
             ),

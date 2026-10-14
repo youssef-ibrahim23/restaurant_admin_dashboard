@@ -31,18 +31,18 @@ final class SectionsLoaded extends SectionsState {
   });
 }
 
-// TODO: Differentiate between page load error and action error (like failed edit/delete).
-// Currently, if an action fails, SectionsError is emitted which can cause the UI to hide the table even when sections exist.
 final class SectionsError extends SectionsState {
   final String message;
+  final bool isActionError;
 
   const SectionsError({
     required this.message,
     super.sections,
+    this.isActionError = false,
   });
 
   @override
-  List<Object?> get props => [...super.props, message];
+  List<Object?> get props => [...super.props, message, isActionError];
 }
 
 // TODO: SectionActionSuccess is used for one-time alerts (SnackBars), but persists as the active state.

@@ -11,4 +11,6 @@ abstract class MenuRepository {
 
   Future<void> toggleAvailability({required int id, required bool isAvailable});
 
+  Future<void> deleteItem({required int id});
+
 }

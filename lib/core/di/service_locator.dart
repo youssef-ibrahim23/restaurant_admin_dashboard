@@ -4,6 +4,7 @@ import 'package:restaurant_admin_dashboard/features/menu/data/repositories/menu_
 import 'package:restaurant_admin_dashboard/features/menu/data/service/menu_service.dart';
 import 'package:restaurant_admin_dashboard/features/menu/domain/repositories/menu_repository.dart';
 import 'package:restaurant_admin_dashboard/features/menu/domain/usecases/add_menu_item_usecase.dart';
+import 'package:restaurant_admin_dashboard/features/menu/domain/usecases/delete_menu_item_usecase.dart';
 import 'package:restaurant_admin_dashboard/features/menu/domain/usecases/edit_menu_item_usecase.dart';
 import 'package:restaurant_admin_dashboard/features/menu/domain/usecases/get_menu_items_usecase.dart';
 import 'package:restaurant_admin_dashboard/features/menu/domain/usecases/toggle_menu_item_availability_usecase.dart';
@@ -76,6 +77,9 @@ Future<void> setupServiceLocator() async {
   sl.registerLazySingleton(
     () => ToggleMenuItemAvailabilityUseCase(repository: sl<MenuRepository>()),
   );
+  sl.registerLazySingleton(
+    () => DeleteMenuItemUseCase(repository: sl<MenuRepository>()),
+  );
   sl.registerFactory(
     () => MenuBloc(
       getMenuItemsUseCase: sl<GetMenuItemsUseCase>(),
@@ -83,6 +87,7 @@ Future<void> setupServiceLocator() async {
       editMenuItemUseCase: sl<EditMenuItemUseCase>(),
       toggleMenuItemAvailabilityUseCase:
           sl<ToggleMenuItemAvailabilityUseCase>(),
+      deleteMenuItemUseCase: sl<DeleteMenuItemUseCase>(),
     ),
   );
 }

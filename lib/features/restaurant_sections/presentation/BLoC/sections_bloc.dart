@@ -43,18 +43,11 @@ class SectionsBloc extends Bloc<SectionsEvent, SectionsState> {
     AddSection event,
     Emitter<SectionsState> emit,
   ) async {
-    // TODO: Optimistic item has id: 0. If user edits or deletes this item before API returns, it will fail.
-    // Optimistic update: add the new section immediately to the list
     final currentSections = state.sections;
-    final optimisticSections = [...currentSections, event.sectionModel];
-    
-    emit(SectionsLoaded(sections: optimisticSections));
-    
+
     try {
-      await insertSectionUseCase(sectionModel: event.sectionModel);
-      // TODO: Refetching all sections with getSectionsUseCase() after an optimistic update adds unnecessary network calls.
-      // Consider appending the created item with its real ID from the response directly instead of full refetch.
-      final sections = await getSectionsUseCase();
+      final createdSection = await insertSectionUseCase(sectionModel: event.sectionModel);
+      final sections = [...currentSections, createdSection];
       emit(
         SectionActionSuccess(
           message: 'Section added successfully',
@@ -62,8 +55,7 @@ class SectionsBloc extends Bloc<SectionsEvent, SectionsState> {
         ),
       );
     } catch (e) {
-      // Revert to original state on error
-      emit(SectionsError(message: e.toString(), sections: currentSections));
+      emit(SectionsError(message: e.toString(), sections: currentSections, isActionError: true));
     }
   }
 
@@ -71,17 +63,13 @@ class SectionsBloc extends Bloc<SectionsEvent, SectionsState> {
     EditSection event,
     Emitter<SectionsState> emit,
   ) async {
-    // Optimistic update: update the section in the list immediately
     final currentSections = state.sections;
-    final optimisticSections = currentSections.map((section) {
-      return section.id == event.sectionModel.id ? event.sectionModel : section;
-    }).toList();
-    
-    emit(SectionsLoaded(sections: optimisticSections));
-    
+
     try {
       await editSectionUseCase(sectionModel: event.sectionModel);
-      final sections = await getSectionsUseCase();
+      final sections = currentSections.map((section) {
+        return section.id == event.sectionModel.id ? event.sectionModel : section;
+      }).toList();
       emit(
         SectionActionSuccess(
           message: 'Section updated successfully',
@@ -89,8 +77,7 @@ class SectionsBloc extends Bloc<SectionsEvent, SectionsState> {
         ),
       );
     } catch (e) {
-      // Revert to original state on error
-      emit(SectionsError(message: e.toString(), sections: currentSections));
+      emit(SectionsError(message: e.toString(), sections: currentSections, isActionError: true));
     }
   }
 
@@ -98,15 +85,11 @@ class SectionsBloc extends Bloc<SectionsEvent, SectionsState> {
     DeleteSection event,
     Emitter<SectionsState> emit,
   ) async {
-    // Optimistic update: remove the section from the list immediately
     final currentSections = state.sections;
-    final optimisticSections = currentSections.where((section) => section.id != event.id).toList();
-    
-    emit(SectionsLoaded(sections: optimisticSections));
-    
+
     try {
       await deleteSectionUseCase(id: event.id);
-      final sections = await getSectionsUseCase();
+      final sections = currentSections.where((section) => section.id != event.id).toList();
       emit(
         SectionActionSuccess(
           message: 'Section deleted successfully',
@@ -114,8 +97,7 @@ class SectionsBloc extends Bloc<SectionsEvent, SectionsState> {
         ),
       );
     } catch (e) {
-      // Revert to original state on error
-      emit(SectionsError(message: e.toString(), sections: currentSections));
+      emit(SectionsError(message: e.toString(), sections: currentSections, isActionError: true));
     }
   }
 
@@ -123,17 +105,13 @@ class SectionsBloc extends Bloc<SectionsEvent, SectionsState> {
     ToggleAvailability event,
     Emitter<SectionsState> emit,
   ) async {
-    // Optimistic update: toggle availability in the list immediately
     final currentSections = state.sections;
-    final optimisticSections = currentSections.map((section) {
-      return section.id == event.sectionModel.id ? event.sectionModel : section;
-    }).toList();
-    
-    emit(SectionsLoaded(sections: optimisticSections));
-    
+
     try {
       await editSectionUseCase(sectionModel: event.sectionModel);
-      final updatedSections = await getSectionsUseCase();
+      final updatedSections = currentSections.map((section) {
+        return section.id == event.sectionModel.id ? event.sectionModel : section;
+      }).toList();
       emit(
         SectionActionSuccess(
           message: 'Section availability updated',
@@ -141,8 +119,7 @@ class SectionsBloc extends Bloc<SectionsEvent, SectionsState> {
         ),
       );
     } catch (e) {
-      // Revert to original state on error
-      emit(SectionsError(message: e.toString(), sections: currentSections));
+      emit(SectionsError(message: e.toString(), sections: currentSections, isActionError: true));
     }
   }
 }

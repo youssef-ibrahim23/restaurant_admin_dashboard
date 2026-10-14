@@ -43,27 +43,41 @@ class _MenuPresenterState extends State<MenuPresenter> {
       isAvailable: item.isAvailable,
       photo: item.photo,
       name: item.name,
-      price: item.price.toString(),
+      price: item.price.toStringAsFixed(2),
     ));
   }
 
   void _saveItem(
     BuildContext context,
     List<MenuItemModel> items,
-    MenuState state,
+    ({
+      int? selectedItemIndex,
+      String selectedCategory,
+      bool isAvailable,
+      String selectedPhoto,
+      String name,
+      String price,
+      String? nameError,
+      String? priceError,
+    }) editor,
   ) {
-    // TODO: 1) add(ValidateEditorForm()) is asynchronous and not awaited; saving proceeds before validation finishes.
-    // 2) double.tryParse()! will crash the app if the user enters an invalid or empty price. Validate inputs safely before dispatching save events.
-    context.read<MenuBloc>().add(ValidateEditorForm());
+    final nameError = editor.name.trim().isEmpty ? 'Please enter an item name' : null;
+    final priceParsed = double.tryParse(editor.price.trim());
+    final priceError = (priceParsed == null || !priceParsed.isFinite || priceParsed < 0)
+        ? 'Please enter a valid price'
+        : null;
 
-    final price = double.tryParse(state.price.trim())!;
+    if (nameError != null || priceError != null) {
+      context.read<MenuBloc>().add(ValidateEditorForm());
+      return;
+    }
 
     final MenuItemModel? existingItem;
 
-    if (state.selectedItemIndex == null) {
+    if (editor.selectedItemIndex == null) {
       existingItem = null;
-    } else if (state.selectedItemIndex! < items.length) {
-      existingItem = items[state.selectedItemIndex!];
+    } else if (editor.selectedItemIndex! < items.length) {
+      existingItem = items[editor.selectedItemIndex!];
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('The selected menu item is unavailable.')),
@@ -74,11 +88,11 @@ class _MenuPresenterState extends State<MenuPresenter> {
     final menuItem = MenuItemModel(
       id: existingItem?.id,
       sectionId: widget.sectionModel.id,
-      photo: state.selectedPhoto,
-      name: state.name.trim(),
-      price: price,
-      category: state.selectedCategory,
-      isAvailable: state.isAvailable,
+      photo: editor.selectedPhoto,
+      name: editor.name.trim(),
+      price: priceParsed!,
+      category: editor.selectedCategory,
+      isAvailable: editor.isAvailable,
     );
 
     final menuBloc = context.read<MenuBloc>();
@@ -89,20 +103,6 @@ class _MenuPresenterState extends State<MenuPresenter> {
     }
   }
 
-  String? _validateName(String name) {
-    if (name.trim().isEmpty) {
-      return 'Please enter an item name';
-    }
-    return null;
-  }
-
-  String? _validatePrice(String price) {
-    final parsedPrice = double.tryParse(price.trim());
-    if (parsedPrice == null || !parsedPrice.isFinite || parsedPrice < 0) {
-      return 'Please enter a valid price';
-    }
-    return null;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -110,13 +110,10 @@ class _MenuPresenterState extends State<MenuPresenter> {
       create: (_) =>
           sl<MenuBloc>()
             ..add(LoadMenuItems(sectionId: widget.sectionModel.id)),
-      // TODO: Combine BlocListener and BlocBuilder into BlocConsumer to reduce widget nesting.
       child: BlocListener<MenuBloc, MenuState>(
         listener: (context, state) {
           if (state is MenuActionSuccess) {
-            if (state.shouldClearForm) {
-              _clearForm(context);
-            }
+            _clearForm(context);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
@@ -133,9 +130,13 @@ class _MenuPresenterState extends State<MenuPresenter> {
             );
           }
         },
-        // TODO: This BlocBuilder rebuilds the entire menu screen on any state change.
-        // Scope BlocBuilder or BlocSelector closer to specific widgets to avoid unnecessary rebuilding.
         child: BlocBuilder<MenuBloc, MenuState>(
+          buildWhen: (previous, current) {
+            return previous.menuModel != current.menuModel ||
+                previous is MenuLoading != current is MenuLoading ||
+                (previous is MenuError && previous.menuModel == null) !=
+                    (current is MenuError && current.menuModel == null);
+          },
           builder: (context, state) {
             Widget content;
 
@@ -229,28 +230,44 @@ class _MenuPresenterState extends State<MenuPresenter> {
                               Expanded(
                                 flex: 2,
                                 child:
-                                    // TODO: BlocSelector returning the entire state (state => state) defeats the purpose of BlocSelector.
-                                    // Select only specific editor fields or use BlocBuilder with buildWhen.
                                     BlocSelector<
                                       MenuBloc,
                                       MenuState,
-                                      MenuState
+                                      ({
+                                        int? selectedItemIndex,
+                                        String selectedCategory,
+                                        bool isAvailable,
+                                        String selectedPhoto,
+                                        String name,
+                                        String price,
+                                        String? nameError,
+                                        String? priceError,
+                                      })
                                     >(
-                                      selector: (state) => state,
-                                      builder: (context, state) {
+                                      selector: (state) => (
+                                        selectedItemIndex: state.selectedItemIndex,
+                                        selectedCategory: state.selectedCategory,
+                                        isAvailable: state.isAvailable,
+                                        selectedPhoto: state.selectedPhoto,
+                                        name: state.name,
+                                        price: state.price,
+                                        nameError: state.nameError,
+                                        priceError: state.priceError,
+                                      ),
+                                      builder: (context, editor) {
                                         return MenuEditPanel(
                                           editing:
-                                              state.selectedItemIndex !=
+                                              editor.selectedItemIndex !=
                                               null,
-                                          name: state.name,
-                                          price: state.price,
+                                          name: editor.name,
+                                          price: editor.price,
                                           selectedCategory:
-                                              state.selectedCategory,
-                                          isAvailable: state.isAvailable,
+                                              editor.selectedCategory,
+                                          isAvailable: editor.isAvailable,
                                           selectedPhoto:
-                                              state.selectedPhoto,
-                                          nameError: state.nameError,
-                                          priceError: state.priceError,
+                                              editor.selectedPhoto,
+                                          nameError: editor.nameError,
+                                          priceError: editor.priceError,
                                           onCategoryChanged: (category) =>
                                               context.read<MenuBloc>().add(
                                                 SelectEditorCategory(
@@ -278,7 +295,7 @@ class _MenuPresenterState extends State<MenuPresenter> {
                                           onSave: () => _saveItem(
                                             context,
                                             menuModel.items,
-                                            state,
+                                            editor,
                                           ),
                                           onCancel: () => _clearForm(context),
                                         );
