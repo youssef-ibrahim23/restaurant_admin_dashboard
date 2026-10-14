@@ -23,6 +23,8 @@ class RestaurantsTable extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<SectionsBloc, SectionsState>(
       builder: (context, state) {
+        // TODO: This hides the whole table if any action fails, even when sections are already loaded.
+        // Only show this full error screen if state.sections is empty (initial load failed).
         if (state is SectionsError) {
           return Center(
             child: Column(

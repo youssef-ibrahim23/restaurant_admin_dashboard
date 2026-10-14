@@ -52,6 +52,8 @@ class _MenuPresenterState extends State<MenuPresenter> {
     List<MenuItemModel> items,
     MenuState state,
   ) {
+    // TODO: 1) add(ValidateEditorForm()) is asynchronous and not awaited; saving proceeds before validation finishes.
+    // 2) double.tryParse()! will crash the app if the user enters an invalid or empty price. Validate inputs safely before dispatching save events.
     context.read<MenuBloc>().add(ValidateEditorForm());
 
     final price = double.tryParse(state.price.trim())!;
@@ -108,6 +110,7 @@ class _MenuPresenterState extends State<MenuPresenter> {
       create: (_) =>
           sl<MenuBloc>()
             ..add(LoadMenuItems(sectionId: widget.sectionModel.id)),
+      // TODO: Combine BlocListener and BlocBuilder into BlocConsumer to reduce widget nesting.
       child: BlocListener<MenuBloc, MenuState>(
         listener: (context, state) {
           if (state is MenuActionSuccess) {
@@ -130,6 +133,8 @@ class _MenuPresenterState extends State<MenuPresenter> {
             );
           }
         },
+        // TODO: This BlocBuilder rebuilds the entire menu screen on any state change.
+        // Scope BlocBuilder or BlocSelector closer to specific widgets to avoid unnecessary rebuilding.
         child: BlocBuilder<MenuBloc, MenuState>(
           builder: (context, state) {
             Widget content;
@@ -224,6 +229,8 @@ class _MenuPresenterState extends State<MenuPresenter> {
                               Expanded(
                                 flex: 2,
                                 child:
+                                    // TODO: BlocSelector returning the entire state (state => state) defeats the purpose of BlocSelector.
+                                    // Select only specific editor fields or use BlocBuilder with buildWhen.
                                     BlocSelector<
                                       MenuBloc,
                                       MenuState,

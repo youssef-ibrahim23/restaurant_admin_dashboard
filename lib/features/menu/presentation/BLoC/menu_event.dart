@@ -30,6 +30,8 @@ final class EditMenuItem extends MenuEvent {
   List<Object?> get props => [menuItem];
 }
 
+// TODO: DeleteMenuItem is declared here but has no handler registered in MenuBloc and no use case.
+// If this event is fired, MenuBloc will throw an unhandled event error.
 final class DeleteMenuItem extends MenuEvent {
   final int id;
 
@@ -54,6 +56,8 @@ final class ToggleMenuItemAvailability extends MenuEvent {
   List<Object?> get props => [id, sectionId, isAvailable];
 }
 
+// TODO: Managing keystrokes (like typing in name and price) via Bloc events causes frequent full rebuilds.
+// Form input state is local UI state and is better handled with TextEditingControllers or a lightweight form Cubit.
 // Editor events
 final class SelectEditorItem extends MenuEvent {
   final int index;

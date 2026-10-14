@@ -21,6 +21,7 @@ class RestaurantsPresenter extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => sl<SectionsBloc>()..add(LoadSections()),
+      // TODO: Avoid using SidebarBloc to navigate between Sections and Menu. Use standard Flutter navigation (e.g., Navigator or GoRouter) to keep features decoupled.
       child: BlocSelector<SidebarBloc, SidebarState, SectionModel?>(
         selector: (state) => state.selectedSection,
         builder: (context, selectedSection) {
@@ -71,6 +72,7 @@ class RestaurantsPresenter extends StatelessWidget {
             },
             child: Scaffold(
               backgroundColor: const Color(0xFFF7F5F1),
+              // TODO: Rebuilding Header and Table on every state change is unnecessary because RestaurantsTable has its own BlocBuilder. Scope this builder only to the loading overlay.
               body: BlocBuilder<SectionsBloc, SectionsState>(
                 builder: (context, state) {
                   return Stack(

@@ -1,6 +1,9 @@
 import 'package:equatable/equatable.dart';
 import '../../data/model/menu_model.dart';
 
+// TODO: Mixing server data state (menuModel) with local form fields (name, price, errors).
+// This forces all state subclasses to pass 8+ editor properties through super().
+// Form state should be separated into a form Cubit or kept in local widget controllers.
 // Base class containing persistent data state (menuModel and editor fields)
 sealed class MenuState extends Equatable {
   final MenuModel? menuModel;
@@ -83,6 +86,8 @@ final class MenuError extends MenuState {
   List<Object?> get props => [...super.props, message];
 }
 
+// TODO: shouldClearForm triggers a ping-pong pattern where UI reacts by immediately sending a ClearEditor event back to Bloc.
+// Form resetting should be handled locally when saving succeeds.
 final class MenuActionSuccess extends MenuState {
   final String message;
   final bool shouldClearForm;

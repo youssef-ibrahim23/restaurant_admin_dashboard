@@ -13,6 +13,7 @@ class SidebarPresenter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // TODO: Move the screens list outside build() or keep it static/const so screens are not rebuilt from scratch on every tab switch.
     final List<Widget> screens = [
       const Center(child: Text('Dashboard')),
       const Center(child: Text('Orders')),

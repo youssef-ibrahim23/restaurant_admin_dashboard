@@ -43,6 +43,7 @@ class SectionsBloc extends Bloc<SectionsEvent, SectionsState> {
     AddSection event,
     Emitter<SectionsState> emit,
   ) async {
+    // TODO: Optimistic item has id: 0. If user edits or deletes this item before API returns, it will fail.
     // Optimistic update: add the new section immediately to the list
     final currentSections = state.sections;
     final optimisticSections = [...currentSections, event.sectionModel];
@@ -51,6 +52,8 @@ class SectionsBloc extends Bloc<SectionsEvent, SectionsState> {
     
     try {
       await insertSectionUseCase(sectionModel: event.sectionModel);
+      // TODO: Refetching all sections with getSectionsUseCase() after an optimistic update adds unnecessary network calls.
+      // Consider appending the created item with its real ID from the response directly instead of full refetch.
       final sections = await getSectionsUseCase();
       emit(
         SectionActionSuccess(

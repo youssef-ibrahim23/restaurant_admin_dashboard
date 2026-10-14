@@ -24,6 +24,7 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
     on<AddMenuItem>(_onAddMenuItem);
     on<EditMenuItem>(_onEditMenuItem);
     on<ToggleMenuItemAvailability>(_onToggleMenuItemAvailability);
+    // TODO: Missing on<DeleteMenuItem> handler. DeleteMenuItem is defined in menu_event.dart, but will crash if dispatched.
     on<SelectEditorItem>(_onSelectEditorItem);
     on<SelectEditorCategory>(_onSelectEditorCategory);
     on<SetEditorAvailability>(_onSetEditorAvailability);
@@ -258,6 +259,8 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
     String? nameError,
     String? priceError,
   }) {
+    // TODO: If the current state is MenuLoading, this forces it to MenuLoaded, hiding the spinner.
+    // Also, if currentState is MenuActionSuccess, typing keeps emitting MenuActionSuccess with old messages.
     final currentState = state;
     final newState = currentState is MenuActionSuccess
         ? MenuActionSuccess(
