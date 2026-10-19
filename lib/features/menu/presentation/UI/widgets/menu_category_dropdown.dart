@@ -36,23 +36,6 @@ class MenuCategoryDropdown extends StatelessWidget {
     }
   }
 
-  Color _getCategoryColor(String category) {
-    switch (category.toLowerCase()) {
-      case 'burger':
-        return const Color(0xFFFF5A1F);
-      case 'drinks':
-        return const Color(0xFF4A90E2);
-      case 'sides':
-        return const Color(0xFFFFB300);
-      case 'chicken':
-        return const Color(0xFFFF9500);
-      case 'pizza':
-        return const Color(0xFFFF8C00);
-      default:
-        return const Color(0xFF6F6964);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final String dropdownValue =

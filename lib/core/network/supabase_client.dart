@@ -90,6 +90,7 @@ class SupabaseClientService {
       // ============================================================
       // UPDATE
       // ============================================================
+
         case SupabaseRequestType.update:
           if (data == null) {
             throw ArgumentError(

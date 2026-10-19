@@ -24,6 +24,12 @@ import '../../features/customers/data/service/customers_service.dart';
 import '../../features/customers/domain/repositories/customers_repository.dart';
 import '../../features/customers/domain/usecases/get_customers_usecase.dart';
 import '../../features/customers/presentation/BLoC/customers_bloc.dart';
+import '../../features/orders/data/repositories/orders_repository_impl.dart';
+import '../../features/orders/data/service/orders_service.dart';
+import '../../features/orders/domain/repositories/orders_repository.dart';
+import '../../features/orders/domain/usecases/get_orders_usecase.dart';
+import '../../features/orders/domain/usecases/update_status_usecase.dart';
+import '../../features/orders/presentation/BLoC/orders_bloc.dart';
 
 final GetIt sl = GetIt.instance;
 
@@ -113,4 +119,23 @@ Future<void> setupServiceLocator() async {
     ),
   );
 
+  // orders feature
+  sl.registerLazySingleton<OrdersService>(
+    () => OrdersService(supabaseClientService: sl<SupabaseClientService>()),
+  );
+  sl.registerLazySingleton<OrdersRepository>(
+    () => OrdersRepositoryImpl(ordersService: sl<OrdersService>()),
+  );
+  sl.registerLazySingleton(
+    () => GetOrdersUseCase(ordersRepository: sl<OrdersRepository>()),
+  );
+  sl.registerLazySingleton(
+    () => UpdateStatusUseCase(ordersRepository: sl<OrdersRepository>()),
+  );
+  sl.registerFactory(
+    () => OrdersBloc(
+      getOrdersUseCase: sl<GetOrdersUseCase>(),
+      updateStatusUseCase: sl<UpdateStatusUseCase>(),
+    ),
+  );
 }
