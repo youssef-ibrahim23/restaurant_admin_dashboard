@@ -65,10 +65,16 @@ class _MenuEditPanelState extends State<MenuEditPanel> {
   void didUpdateWidget(MenuEditPanel oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.name != nameController.text) {
-      nameController.text = widget.name;
+      nameController.value = TextEditingValue(
+        text: widget.name,
+        selection: TextSelection.collapsed(offset: widget.name.length),
+      );
     }
     if (widget.price != priceController.text) {
-      priceController.text = widget.price;
+      priceController.value = TextEditingValue(
+        text: widget.price,
+        selection: TextSelection.collapsed(offset: widget.price.length),
+      );
     }
   }
 

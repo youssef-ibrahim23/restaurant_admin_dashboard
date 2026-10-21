@@ -13,6 +13,55 @@ import 'package:restaurant_admin_dashboard/features/menu/presentation/UI/widgets
 import 'package:restaurant_admin_dashboard/features/menu/presentation/UI/widgets/menu_list.dart';
 import 'package:restaurant_admin_dashboard/features/restaurant_sections/data/model/section_model.dart';
 
+class _MenuFormState {
+  final int? selectedItemIndex;
+  final String selectedCategory;
+  final bool isAvailable;
+  final String selectedPhoto;
+  final String name;
+  final String price;
+  final String? nameError;
+  final String? priceError;
+
+  const _MenuFormState({
+    this.selectedItemIndex,
+    this.selectedCategory = 'Burger',
+    this.isAvailable = true,
+    this.selectedPhoto = '🍔',
+    this.name = '',
+    this.price = '',
+    this.nameError,
+    this.priceError,
+  });
+
+  _MenuFormState copyWith({
+    int? selectedItemIndex,
+    String? selectedCategory,
+    bool? isAvailable,
+    String? selectedPhoto,
+    String? name,
+    String? price,
+    String? nameError,
+    String? priceError,
+    bool clear = false,
+  }) {
+    return _MenuFormState(
+      selectedItemIndex: clear
+          ? null
+          : selectedItemIndex ?? this.selectedItemIndex,
+      selectedCategory: clear
+          ? 'Burger'
+          : selectedCategory ?? this.selectedCategory,
+      isAvailable: clear ? true : isAvailable ?? this.isAvailable,
+      selectedPhoto: clear ? '🍔' : selectedPhoto ?? this.selectedPhoto,
+      name: clear ? '' : name ?? this.name,
+      price: clear ? '' : price ?? this.price,
+      nameError: clear ? null : nameError ?? this.nameError,
+      priceError: clear ? null : priceError ?? this.priceError,
+    );
+  }
+}
+
 class MenuPresenter extends StatefulWidget {
   final SectionModel sectionModel;
   final bool showScaffold;
@@ -28,56 +77,53 @@ class MenuPresenter extends StatefulWidget {
 }
 
 class _MenuPresenterState extends State<MenuPresenter> {
-  void _clearForm(BuildContext context) {
-    context.read<MenuBloc>().add(ClearEditor());
+  _MenuFormState _formState = const _MenuFormState();
+
+  void _clearForm() {
+    setState(() {
+      _formState = _formState.copyWith(clear: true);
+    });
   }
 
-  void _selectItem({
-    required BuildContext context,
-    required MenuItemModel item,
-    required int index,
-  }) {
-    context.read<MenuBloc>().add(SelectEditorItem(
-      index: index,
-      category: item.category,
-      isAvailable: item.isAvailable,
-      photo: item.photo,
-      name: item.name,
-      price: item.price.toStringAsFixed(2),
-    ));
+  void _selectItem(MenuItemModel item, int index) {
+    setState(() {
+      _formState = _MenuFormState(
+        selectedItemIndex: index,
+        selectedCategory: item.category,
+        isAvailable: item.isAvailable,
+        selectedPhoto: item.photo,
+        name: item.name,
+        price: item.price.toStringAsFixed(2),
+      );
+    });
   }
 
-  void _saveItem(
-    BuildContext context,
-    List<MenuItemModel> items,
-    ({
-      int? selectedItemIndex,
-      String selectedCategory,
-      bool isAvailable,
-      String selectedPhoto,
-      String name,
-      String price,
-      String? nameError,
-      String? priceError,
-    }) editor,
-  ) {
-    final nameError = editor.name.trim().isEmpty ? 'Please enter an item name' : null;
-    final priceParsed = double.tryParse(editor.price.trim());
-    final priceError = (priceParsed == null || !priceParsed.isFinite || priceParsed < 0)
+  void _saveItem(List<MenuItemModel> items) {
+    final nameError = _formState.name.trim().isEmpty
+        ? 'Please enter an item name'
+        : null;
+    final priceParsed = double.tryParse(_formState.price.trim());
+    final priceError =
+        (priceParsed == null || !priceParsed.isFinite || priceParsed < 0)
         ? 'Please enter a valid price'
         : null;
 
     if (nameError != null || priceError != null) {
-      context.read<MenuBloc>().add(ValidateEditorForm());
+      setState(() {
+        _formState = _formState.copyWith(
+          nameError: nameError,
+          priceError: priceError,
+        );
+      });
       return;
     }
 
     final MenuItemModel? existingItem;
 
-    if (editor.selectedItemIndex == null) {
+    if (_formState.selectedItemIndex == null) {
       existingItem = null;
-    } else if (editor.selectedItemIndex! < items.length) {
-      existingItem = items[editor.selectedItemIndex!];
+    } else if (_formState.selectedItemIndex! < items.length) {
+      existingItem = items[_formState.selectedItemIndex!];
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('The selected menu item is unavailable.')),
@@ -88,11 +134,11 @@ class _MenuPresenterState extends State<MenuPresenter> {
     final menuItem = MenuItemModel(
       id: existingItem?.id,
       sectionId: widget.sectionModel.id,
-      photo: editor.selectedPhoto,
-      name: editor.name.trim(),
+      photo: _formState.selectedPhoto,
+      name: _formState.name.trim(),
       price: priceParsed!,
-      category: editor.selectedCategory,
-      isAvailable: editor.isAvailable,
+      category: _formState.selectedCategory,
+      isAvailable: _formState.isAvailable,
     );
 
     final menuBloc = context.read<MenuBloc>();
@@ -103,17 +149,15 @@ class _MenuPresenterState extends State<MenuPresenter> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) =>
-          sl<MenuBloc>()
-            ..add(LoadMenuItems(sectionId: widget.sectionModel.id)),
+          sl<MenuBloc>()..add(LoadMenuItems(sectionId: widget.sectionModel.id)),
       child: BlocListener<MenuBloc, MenuState>(
         listener: (context, state) {
           if (state is MenuActionSuccess) {
-            _clearForm(context);
+            _clearForm();
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
@@ -175,7 +219,7 @@ class _MenuPresenterState extends State<MenuPresenter> {
                       children: [
                         MenuHeader(
                           sectionName: widget.sectionModel.name,
-                          onClick: () => _clearForm(context),
+                          onClick: () => _clearForm(),
                         ),
                         SizedBox(height: 28.h),
                         Expanded(
@@ -184,123 +228,83 @@ class _MenuPresenterState extends State<MenuPresenter> {
                             children: [
                               Expanded(
                                 flex: 3,
-                                child:
-                                    BlocSelector<
-                                      MenuBloc,
-                                      MenuState,
-                                      int?
-                                    >(
-                                      selector: (state) =>
-                                          state.selectedItemIndex,
-                                      builder: (context, selectedItemIndex) {
-                                        return MenuList(
-                                          items: menuModel.items,
-                                          selectedItemIndex: selectedItemIndex,
-                                          onItemSelected:
-                                              ({
-                                                required name,
-                                                required price,
-                                                required category,
-                                                required available,
-                                                required index,
-                                                required photo,
-                                              }) {
-                                                _selectItem(
-                                                  context: context,
-                                                  item: menuModel.items[index],
-                                                  index: index,
-                                                );
-                                              },
-                                          onAvailabilityChanged:
-                                              (item, available) {
-                                                context.read<MenuBloc>().add(
-                                                  ToggleMenuItemAvailability(
-                                                    id: item.id!,
-                                                    sectionId:
-                                                        widget.sectionModel.id,
-                                                    isAvailable: available,
-                                                  ),
-                                                );
-                                              },
-                                        );
-                                      },
-                                    ),
+                                child: MenuList(
+                                  items: menuModel.items,
+                                  selectedItemIndex:
+                                      _formState.selectedItemIndex,
+                                  onItemSelected: ({
+                                    required name,
+                                    required price,
+                                    required category,
+                                    required available,
+                                    required index,
+                                    required photo,
+                                  }) {
+                                    _selectItem(menuModel.items[index], index);
+                                  },
+                                  onAvailabilityChanged: (item, available) {
+                                    context.read<MenuBloc>().add(
+                                      ToggleMenuItemAvailability(
+                                        id: item.id!,
+                                        sectionId: widget.sectionModel.id,
+                                        isAvailable: available,
+                                      ),
+                                    );
+                                  },
+                                ),
                               ),
                               SizedBox(width: 18.w),
                               Expanded(
                                 flex: 2,
-                                child:
-                                    BlocSelector<
-                                      MenuBloc,
-                                      MenuState,
-                                      ({
-                                        int? selectedItemIndex,
-                                        String selectedCategory,
-                                        bool isAvailable,
-                                        String selectedPhoto,
-                                        String name,
-                                        String price,
-                                        String? nameError,
-                                        String? priceError,
-                                      })
-                                    >(
-                                      selector: (state) => (
-                                        selectedItemIndex: state.selectedItemIndex,
-                                        selectedCategory: state.selectedCategory,
-                                        isAvailable: state.isAvailable,
-                                        selectedPhoto: state.selectedPhoto,
-                                        name: state.name,
-                                        price: state.price,
-                                        nameError: state.nameError,
-                                        priceError: state.priceError,
-                                      ),
-                                      builder: (context, editor) {
-                                        return MenuEditPanel(
-                                          editing:
-                                              editor.selectedItemIndex !=
-                                              null,
-                                          name: editor.name,
-                                          price: editor.price,
-                                          selectedCategory:
-                                              editor.selectedCategory,
-                                          isAvailable: editor.isAvailable,
-                                          selectedPhoto:
-                                              editor.selectedPhoto,
-                                          nameError: editor.nameError,
-                                          priceError: editor.priceError,
-                                          onCategoryChanged: (category) =>
-                                              context.read<MenuBloc>().add(
-                                                SelectEditorCategory(
-                                                  category: category,
-                                                ),
-                                              ),
-                                          onAvailabilityChanged: (available) =>
-                                              context.read<MenuBloc>().add(
-                                                SetEditorAvailability(
-                                                  isAvailable: available,
-                                                ),
-                                              ),
-                                          onPhotoChanged: (photo) =>
-                                              context.read<MenuBloc>().add(
-                                                SelectEditorPhoto(photo: photo),
-                                              ),
-                                          onNameChanged: (name) =>
-                                              context.read<MenuBloc>().add(
-                                                UpdateEditorName(name: name),
-                                              ),
-                                          onPriceChanged: (price) =>
-                                              context.read<MenuBloc>().add(
-                                                UpdateEditorPrice(price: price),
-                                              ),
-                                          onSave: () => _saveItem(
-                                            context,
-                                            menuModel.items,
-                                            editor,
-                                          ),
-                                          onCancel: () => _clearForm(context),
-                                        );
-                                      },
-                                    ),
+                                child: MenuEditPanel(
+                                  editing: _formState.selectedItemIndex != null,
+                                  name: _formState.name,
+                                  price: _formState.price,
+                                  selectedCategory: _formState.selectedCategory,
+                                  isAvailable: _formState.isAvailable,
+                                  selectedPhoto: _formState.selectedPhoto,
+                                  nameError: _formState.nameError,
+                                  priceError: _formState.priceError,
+                                  onCategoryChanged: (category) {
+                                    setState(() {
+                                      _formState = _formState.copyWith(
+                                        selectedCategory: category,
+                                      );
+                                    });
+                                  },
+                                  onAvailabilityChanged: (available) {
+                                    setState(() {
+                                      _formState = _formState.copyWith(
+                                        isAvailable: available,
+                                      );
+                                    });
+                                  },
+                                  onPhotoChanged: (photo) {
+                                    setState(() {
+                                      _formState = _formState.copyWith(
+                                        selectedPhoto: photo,
+                                      );
+                                    });
+                                  },
+                                  onNameChanged: (name) {
+                                    setState(() {
+                                      _formState = _formState.copyWith(
+                                        name: name,
+                                        nameError: null,
+                                      );
+                                    });
+                                  },
+                                  onPriceChanged: (price) {
+                                    setState(() {
+                                      _formState = _formState.copyWith(
+                                        price: price,
+                                        priceError: null,
+                                      );
+                                    });
+                                  },
+                                  onSave: () => _saveItem(menuModel.items),
+                                  onCancel: () => _clearForm(),
+                                ),
                               ),
                             ],
                           ),
