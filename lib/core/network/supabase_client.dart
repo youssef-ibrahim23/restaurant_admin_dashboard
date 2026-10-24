@@ -15,13 +15,15 @@ enum SupabaseRequestType {
 class SupabaseClientService {
   final SupabaseClient client;
 
-  SupabaseClientService() : client = Supabase.instance.client;
+  SupabaseClientService()
+      : client = Supabase.instance.client;
 
   Future<ApiResponse<dynamic>> request({
     required SupabaseRequestType type,
     required String table,
 
     // Select
+    String? select,
     String? orderBy,
     bool ascending = false,
 
@@ -39,15 +41,20 @@ class SupabaseClientService {
       dynamic query;
 
       switch (type) {
+      // ============================================================
+      // SELECT
+      // ============================================================
         case SupabaseRequestType.select:
-          query = client.from(table).select();
+          query = client.from(table).select(select ?? '*');
 
+          // Filters
           if (filters != null) {
             filters.forEach((key, value) {
               query = query.eq(key, value);
             });
           }
 
+          // Order
           if (orderBy != null) {
             query = query.order(
               orderBy,
@@ -56,6 +63,8 @@ class SupabaseClientService {
           }
 
           final response = await query;
+
+          print('Supabase SELECT response: $response');
 
           return ApiResponse(
             data: List<Map<String, dynamic>>.from(response),
@@ -78,6 +87,9 @@ class SupabaseClientService {
             data: Map<String, dynamic>.from(response),
           );
 
+      // ============================================================
+      // UPDATE
+      // ============================================================
         case SupabaseRequestType.update:
           if (data == null) {
             throw ArgumentError(
@@ -102,6 +114,9 @@ class SupabaseClientService {
             data: Map<String, dynamic>.from(response),
           );
 
+      // ============================================================
+      // DELETE
+      // ============================================================
         case SupabaseRequestType.delete:
           if (column == null) {
             throw ArgumentError(
@@ -114,7 +129,9 @@ class SupabaseClientService {
               .delete()
               .eq(column, value);
 
-          return ApiResponse(data: true);
+          return ApiResponse(
+            data: true,
+          );
       }
     } on PostgrestException catch (error, stackTrace) {
       Error.throwWithStackTrace(
