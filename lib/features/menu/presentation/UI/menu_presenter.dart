@@ -98,7 +98,7 @@ class _MenuPresenterState extends State<MenuPresenter> {
     });
   }
 
-  void _saveItem(List<MenuItemModel> items) {
+  void _saveItem(List<MenuItemModel> items, BuildContext context) {
     final nameError = _formState.name.trim().isEmpty
         ? 'Please enter an item name'
         : null;
@@ -302,7 +302,7 @@ class _MenuPresenterState extends State<MenuPresenter> {
                                       );
                                     });
                                   },
-                                  onSave: () => _saveItem(menuModel.items),
+                                  onSave: () => _saveItem(menuModel.items, context),
                                   onCancel: () => _clearForm(),
                                 ),
                               ),
