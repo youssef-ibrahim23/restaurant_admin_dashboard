@@ -10,6 +10,8 @@ final class MenuFormState extends Equatable {
   final String price;
   final String? nameError;
   final String? priceError;
+  final MenuItemModel? itemToSave;
+  final String? submissionError;
 
   const MenuFormState({
     this.selectedItemIndex,
@@ -20,6 +22,8 @@ final class MenuFormState extends Equatable {
     this.price = '',
     this.nameError,
     this.priceError,
+    this.itemToSave,
+    this.submissionError,
   });
 
   factory MenuFormState.fromItem(MenuItemModel item, int index) {
@@ -43,6 +47,10 @@ final class MenuFormState extends Equatable {
     String? priceError,
     bool clearNameError = false,
     bool clearPriceError = false,
+    MenuItemModel? itemToSave,
+    bool clearItemToSave = false,
+    String? submissionError,
+    bool clearSubmissionError = false,
   }) {
     return MenuFormState(
       selectedItemIndex: selectedItemIndex,
@@ -53,6 +61,10 @@ final class MenuFormState extends Equatable {
       price: price ?? this.price,
       nameError: clearNameError ? null : nameError ?? this.nameError,
       priceError: clearPriceError ? null : priceError ?? this.priceError,
+      itemToSave: clearItemToSave ? null : itemToSave ?? this.itemToSave,
+      submissionError: clearSubmissionError
+          ? null
+          : submissionError ?? this.submissionError,
     );
   }
 
@@ -66,5 +78,7 @@ final class MenuFormState extends Equatable {
     price,
     nameError,
     priceError,
+    itemToSave,
+    submissionError,
   ];
 }

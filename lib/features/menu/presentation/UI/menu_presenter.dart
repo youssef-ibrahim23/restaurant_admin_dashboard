@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:restaurant_admin_dashboard/core/di/service_locator.dart';
 import 'package:restaurant_admin_dashboard/core/shared/widgets/loading.dart';
-import 'package:restaurant_admin_dashboard/features/menu/data/model/menu_item_model.dart';
 import 'package:restaurant_admin_dashboard/features/menu/data/model/menu_model.dart';
 import 'package:restaurant_admin_dashboard/features/menu/presentation/BLoC/menu_bloc.dart';
 import 'package:restaurant_admin_dashboard/features/menu/presentation/BLoC/menu_event.dart';
@@ -37,26 +36,55 @@ class MenuPresenter extends StatelessWidget {
         ),
         BlocProvider(create: (_) => MenuFormBloc()),
       ],
-      child: BlocListener<MenuBloc, MenuState>(
-        listener: (context, state) {
-          if (state is MenuActionSuccess) {
-            context.read<MenuFormBloc>().add(const MenuFormReset());
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: const Color(0xFF239B56),
-                duration: const Duration(seconds: 2),
-              ),
-            );
-          } else if (state is MenuError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: const Color(0xFFD64545),
-              ),
-            );
-          }
-        },
+      child: MultiBlocListener(
+        listeners: [
+          BlocListener<MenuBloc, MenuState>(
+            listener: (context, state) {
+              if (state is MenuActionSuccess) {
+                context.read<MenuFormBloc>().add(const MenuFormReset());
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(state.message),
+                    backgroundColor: const Color(0xFF239B56),
+                    duration: const Duration(seconds: 2),
+                  ),
+                );
+              } else if (state is MenuError) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(state.message),
+                    backgroundColor: const Color(0xFFD64545),
+                  ),
+                );
+              }
+            },
+          ),
+          BlocListener<MenuFormBloc, MenuFormState>(
+            listener: (context, state) {
+              if (state.submissionError != null) {
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text(state.submissionError!)));
+              }
+
+              final itemToSave = state.itemToSave;
+              if (itemToSave != null) {
+                if (state.selectedItemIndex == null) {
+                  context.read<MenuBloc>().add(
+                    AddMenuItem(menuItem: itemToSave),
+                  );
+                } else {
+                  context.read<MenuBloc>().add(
+                    EditMenuItem(menuItem: itemToSave),
+                  );
+                }
+                context.read<MenuFormBloc>().add(
+                  const MenuFormSubmissionHandled(),
+                );
+              }
+            },
+          ),
+        ],
         child: BlocBuilder<MenuFormBloc, MenuFormState>(
           builder: (context, formState) {
             return BlocBuilder<MenuBloc, MenuState>(
@@ -188,11 +216,13 @@ class MenuPresenter extends StatelessWidget {
                                           MenuFormPriceChanged(price),
                                         );
                                       },
-                                      onSave: () => _saveItem(
-                                        menuModel.items,
-                                        formState,
-                                        context,
-                                      ),
+                                      onSave: () =>
+                                          context.read<MenuFormBloc>().add(
+                                            MenuFormSaveRequested(
+                                              sectionId: sectionModel.id,
+                                              items: menuModel.items,
+                                            ),
+                                          ),
                                       onCancel: () => context
                                           .read<MenuFormBloc>()
                                           .add(const MenuFormReset()),
@@ -223,57 +253,5 @@ class MenuPresenter extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  void _saveItem(
-    List<MenuItemModel> items,
-    MenuFormState formState,
-    BuildContext context,
-  ) {
-    final nameError = formState.name.trim().isEmpty
-        ? 'Please enter an item name'
-        : null;
-    final priceParsed = double.tryParse(formState.price.trim());
-    final priceError =
-        (priceParsed == null || !priceParsed.isFinite || priceParsed < 0)
-        ? 'Please enter a valid price'
-        : null;
-
-    if (nameError != null || priceError != null) {
-      context.read<MenuFormBloc>().add(
-        MenuFormValidationFailed(nameError: nameError, priceError: priceError),
-      );
-      return;
-    }
-
-    final MenuItemModel? existingItem;
-
-    if (formState.selectedItemIndex == null) {
-      existingItem = null;
-    } else if (formState.selectedItemIndex! < items.length) {
-      existingItem = items[formState.selectedItemIndex!];
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('The selected menu item is unavailable.')),
-      );
-      return;
-    }
-
-    final menuItem = MenuItemModel(
-      id: existingItem?.id,
-      sectionId: sectionModel.id,
-      photo: formState.selectedPhoto,
-      name: formState.name.trim(),
-      price: priceParsed!,
-      category: formState.selectedCategory,
-      isAvailable: formState.isAvailable,
-    );
-
-    final menuBloc = context.read<MenuBloc>();
-    if (existingItem == null) {
-      menuBloc.add(AddMenuItem(menuItem: menuItem));
-    } else {
-      menuBloc.add(EditMenuItem(menuItem: menuItem));
-    }
   }
 }

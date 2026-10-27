@@ -67,12 +67,19 @@ final class MenuFormPriceChanged extends MenuFormEvent {
   List<Object?> get props => [price];
 }
 
-final class MenuFormValidationFailed extends MenuFormEvent {
-  final String? nameError;
-  final String? priceError;
+final class MenuFormSaveRequested extends MenuFormEvent {
+  final int sectionId;
+  final List<MenuItemModel> items;
 
-  const MenuFormValidationFailed({this.nameError, this.priceError});
+  const MenuFormSaveRequested({required this.sectionId, required this.items});
 
   @override
-  List<Object?> get props => [nameError, priceError];
+  List<Object?> get props => [sectionId, items];
+}
+
+final class MenuFormSubmissionHandled extends MenuFormEvent {
+  const MenuFormSubmissionHandled();
+
+  @override
+  List<Object?> get props => [];
 }
