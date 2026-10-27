@@ -65,7 +65,7 @@ class SupabaseClientService {
           final response = await query;
 
           print('Supabase SELECT response: $response');
-          
+
           return ApiResponse(
             data: List<Map<String, dynamic>>.from(response),
           );

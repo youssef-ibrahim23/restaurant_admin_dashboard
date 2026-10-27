@@ -10,6 +10,7 @@ final class LoadMenuItems extends MenuEvent {
 
   @override
   List<Object?> get props => [sectionId];
+
 }
 
 final class AddMenuItem extends MenuEvent {

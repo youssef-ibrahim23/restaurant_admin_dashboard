@@ -1,4 +1,3 @@
-
 import 'package:restaurant_admin_dashboard/features/restaurant_sections/data/model/section_model.dart';
 
 abstract class SectionsRepository {
