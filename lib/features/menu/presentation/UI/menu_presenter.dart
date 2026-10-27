@@ -85,101 +85,113 @@ class MenuPresenter extends StatelessWidget {
             },
           ),
         ],
-        // TODO: UI Performance issue - Top-level nested BlocBuilder<MenuFormBloc> and BlocBuilder<MenuBloc> wrap the entire screen hierarchy. Every form keystroke or state change triggers a full rebuild. Move BlocBuilders down to granular widgets (e.g. wrap only MenuList with BlocBuilder<MenuBloc> and MenuEditPanel with BlocBuilder<MenuFormBloc>).
-        child: BlocBuilder<MenuFormBloc, MenuFormState>(
-          builder: (context, formState) {
-            return BlocBuilder<MenuBloc, MenuState>(
-              buildWhen: (previous, current) {
-                return previous.menuModel != current.menuModel ||
-                    previous is MenuLoading != current is MenuLoading ||
-                    (previous is MenuError && previous.menuModel == null) !=
-                        (current is MenuError && current.menuModel == null);
-              },
-              builder: (context, state) {
-                Widget content;
+        child: BlocBuilder<MenuBloc, MenuState>(
+          buildWhen: (previous, current) {
+            return previous.menuModel != current.menuModel ||
+                previous is MenuLoading != current is MenuLoading ||
+                (previous is MenuError && previous.menuModel == null) !=
+                    (current is MenuError && current.menuModel == null);
+          },
+          builder: (context, state) {
+            Widget content;
 
-                if (state is MenuError && state.menuModel == null) {
-                  content = Center(
+            if (state is MenuError && state.menuModel == null) {
+              content = Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Unable to load menu items.',
+                      style: TextStyle(
+                        color: const Color(0xFF211E1C),
+                        fontSize: 14.sp,
+                      ),
+                    ),
+                    SizedBox(height: 12.h),
+                    ElevatedButton(
+                      onPressed: () {
+                        context.read<MenuBloc>().add(
+                          LoadMenuItems(sectionId: sectionModel.id),
+                        );
+                      },
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              );
+            } else {
+              final menuModel = state.menuModel ?? const MenuModel(items: []);
+
+              content = Stack(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(25.w),
                     child: Column(
-                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(
-                          'Unable to load menu items.',
-                          style: TextStyle(
-                            color: const Color(0xFF211E1C),
-                            fontSize: 14.sp,
+                        MenuHeader(
+                          sectionName: sectionModel.name,
+                          onClick: () => context.read<MenuFormBloc>().add(
+                            const MenuFormReset(),
                           ),
                         ),
-                        SizedBox(height: 12.h),
-                        ElevatedButton(
-                          onPressed: () {
-                            context.read<MenuBloc>().add(
-                              LoadMenuItems(sectionId: sectionModel.id),
-                            );
-                          },
-                          child: const Text('Retry'),
-                        ),
-                      ],
-                    ),
-                  );
-                } else {
-                  final menuModel =
-                      state.menuModel ?? const MenuModel(items: []);
-
-                  content = Stack(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.all(25.w),
-                        child: Column(
-                          children: [
-                            MenuHeader(
-                              sectionName: sectionModel.name,
-                              onClick: () => context.read<MenuFormBloc>().add(
-                                const MenuFormReset(),
-                              ),
-                            ),
-                            SizedBox(height: 28.h),
-                            Expanded(
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  Expanded(
-                                    flex: 3,
-                                    child: MenuList(
-                                      items: menuModel.items,
-                                      selectedItemIndex:
+                        SizedBox(height: 28.h),
+                        Expanded(
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Expanded(
+                                flex: 3,
+                                child:
+                                    BlocSelector<
+                                      MenuFormBloc,
+                                      MenuFormState,
+                                      int?
+                                    >(
+                                      selector: (formState) =>
                                           formState.selectedItemIndex,
-                                      onItemSelected:
-                                          ({
-                                            required name,
-                                            required price,
-                                            required category,
-                                            required available,
-                                            required index,
-                                            required photo,
-                                          }) {
-                                            context.read<MenuFormBloc>().add(
-                                              MenuFormItemSelected(
-                                                item: menuModel.items[index],
-                                                index: index,
-                                              ),
-                                            );
-                                          },
-                                      onAvailabilityChanged: (item, available) {
-                                        context.read<MenuBloc>().add(
-                                          ToggleMenuItemAvailability(
-                                            id: item.id!,
-                                            sectionId: sectionModel.id,
-                                            isAvailable: available,
-                                          ),
+                                      builder: (context, selectedItemIndex) {
+                                        return MenuList(
+                                          items: menuModel.items,
+                                          selectedItemIndex: selectedItemIndex,
+                                          onItemSelected:
+                                              ({
+                                                required name,
+                                                required price,
+                                                required category,
+                                                required available,
+                                                required index,
+                                                required photo,
+                                              }) {
+                                                context
+                                                    .read<MenuFormBloc>()
+                                                    .add(
+                                                      MenuFormItemSelected(
+                                                        item: menuModel
+                                                            .items[index],
+                                                        index: index,
+                                                      ),
+                                                    );
+                                              },
+                                          onAvailabilityChanged:
+                                              (item, available) {
+                                                context.read<MenuBloc>().add(
+                                                  ToggleMenuItemAvailability(
+                                                    id: item.id!,
+                                                    sectionId: sectionModel.id,
+                                                    isAvailable: available,
+                                                  ),
+                                                );
+                                              },
                                         );
                                       },
                                     ),
-                                  ),
-                                  SizedBox(width: 18.w),
-                                  Expanded(
-                                    flex: 2,
-                                    child: MenuEditPanel(
+                              ),
+                              SizedBox(width: 18.w),
+                              Expanded(
+                                flex: 2,
+                                child: BlocBuilder<MenuFormBloc, MenuFormState>(
+                                  builder: (context, formState) {
+                                    return MenuEditPanel(
                                       editing:
                                           formState.selectedItemIndex != null,
                                       name: formState.name,
@@ -227,29 +239,29 @@ class MenuPresenter extends StatelessWidget {
                                       onCancel: () => context
                                           .read<MenuFormBloc>()
                                           .add(const MenuFormReset()),
-                                    ),
-                                  ),
-                                ],
+                                    );
+                                  },
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                      if (state is MenuLoading) Loading(),
-                    ],
-                  );
-                }
+                      ],
+                    ),
+                  ),
+                  if (state is MenuLoading) Loading(),
+                ],
+              );
+            }
 
-                if (showScaffold) {
-                  return Scaffold(
-                    backgroundColor: const Color(0xFFF7F4EF),
-                    body: content,
-                  );
-                }
+            if (showScaffold) {
+              return Scaffold(
+                backgroundColor: const Color(0xFFF7F4EF),
+                body: content,
+              );
+            }
 
-                return content;
-              },
-            );
+            return content;
           },
         ),
       ),
