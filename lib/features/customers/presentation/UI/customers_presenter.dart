@@ -33,6 +33,7 @@ class CustomersPresenter extends StatelessWidget {
                       SizedBox(height: 28.h),
                       SearchField(
                         onChanged: (query) {
+                          // TODO: Ensure search input events are debounced before adding to BLoC.
                           context.read<CustomersBloc>().add(
                             SearchCustomers(query),
                           );

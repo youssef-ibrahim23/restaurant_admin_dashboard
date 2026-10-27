@@ -7,6 +7,7 @@ import 'customers_state.dart';
 
 class CustomersBloc extends Bloc<CustomersEvent, CustomersState> {
   final GetCustomersUseCase _getCustomersUseCase;
+  // TODO: Storing state (_allCustomers) outside CustomersState violates single source of truth. Keep full list inside CustomersState.
   List<CustomerModel> _allCustomers = const [];
 
   CustomersBloc({required this._getCustomersUseCase})
