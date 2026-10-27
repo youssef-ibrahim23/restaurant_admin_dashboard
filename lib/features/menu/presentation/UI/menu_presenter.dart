@@ -85,6 +85,7 @@ class MenuPresenter extends StatelessWidget {
             },
           ),
         ],
+        // TODO: UI Performance issue - Top-level nested BlocBuilder<MenuFormBloc> and BlocBuilder<MenuBloc> wrap the entire screen hierarchy. Every form keystroke or state change triggers a full rebuild. Move BlocBuilders down to granular widgets (e.g. wrap only MenuList with BlocBuilder<MenuBloc> and MenuEditPanel with BlocBuilder<MenuFormBloc>).
         child: BlocBuilder<MenuFormBloc, MenuFormState>(
           builder: (context, formState) {
             return BlocBuilder<MenuBloc, MenuState>(
