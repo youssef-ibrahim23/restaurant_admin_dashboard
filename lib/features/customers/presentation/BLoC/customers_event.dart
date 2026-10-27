@@ -1,18 +1,21 @@
 import 'package:equatable/equatable.dart';
 
-sealed class CustomersEvent extends Equatable {}
+sealed class CustomersEvent extends Equatable {
+  const CustomersEvent();
+}
 
-// TODO: Declare event constructors as const (e.g., const LoadCustomers()) for immutability and performance.
 final class LoadCustomers extends CustomersEvent {
+
+  const LoadCustomers();
+
   @override
   List<Object?> get props => [];
 }
 
-// TODO: Declare event constructors as const (e.g., const SearchCustomers(this.query)).
 final class SearchCustomers extends CustomersEvent {
   final String query;
 
-  SearchCustomers(this.query);
+  const SearchCustomers(this.query);
 
   @override
   List<Object?> get props => [query];

@@ -1,10 +1,17 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SearchField extends StatefulWidget {
   final ValueChanged<String>? onChanged;
+  final Duration debounceDuration;
 
-  const SearchField({super.key, this.onChanged});
+  const SearchField({
+    super.key,
+    this.onChanged,
+    this.debounceDuration = const Duration(milliseconds: 200),
+  });
 
   @override
   State<SearchField> createState() => _SearchFieldState();
@@ -12,9 +19,18 @@ class SearchField extends StatefulWidget {
 
 class _SearchFieldState extends State<SearchField> {
   final TextEditingController _controller = TextEditingController();
+  Timer? _debounce;
+
+  void _onChanged(String query) {
+    _debounce?.cancel();
+    _debounce = Timer(widget.debounceDuration, () {
+      widget.onChanged?.call(query);
+    });
+  }
 
   @override
   void dispose() {
+    _debounce?.cancel();
     _controller.dispose();
     super.dispose();
   }
@@ -36,7 +52,7 @@ class _SearchFieldState extends State<SearchField> {
           Expanded(
             child: TextField(
               controller: _controller,
-              onChanged: widget.onChanged,
+              onChanged: _onChanged,
               decoration: InputDecoration(
                 hintText: 'Search customers',
                 hintStyle: TextStyle(

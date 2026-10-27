@@ -1,5 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:restaurant_admin_dashboard/features/customers/data/model/customer_model.dart';
 import 'package:restaurant_admin_dashboard/features/customers/domain/usecases/get_customers_usecase.dart';
 
 import 'customers_event.dart';
@@ -7,11 +6,9 @@ import 'customers_state.dart';
 
 class CustomersBloc extends Bloc<CustomersEvent, CustomersState> {
   final GetCustomersUseCase _getCustomersUseCase;
-  // TODO: Storing state (_allCustomers) outside CustomersState violates single source of truth. Keep full list inside CustomersState.
-  List<CustomerModel> _allCustomers = const [];
 
   CustomersBloc({required this._getCustomersUseCase})
-    : super(const CustomersInitial(customers: [])) {
+    : super(const CustomersInitial(customers: [], allCustomers: [])) {
     on<LoadCustomers>(_onLoadCustomers);
     on<SearchCustomers>(_onSearchCustomers);
   }
@@ -20,15 +17,24 @@ class CustomersBloc extends Bloc<CustomersEvent, CustomersState> {
     LoadCustomers event,
     Emitter<CustomersState> emit,
   ) async {
-    emit(CustomersLoading(customers: state.customers));
+    emit(
+      CustomersLoading(
+        customers: state.customers,
+        allCustomers: state.allCustomers,
+      ),
+    );
 
     try {
       final customers = await _getCustomersUseCase.call();
-      _allCustomers = customers;
-
-      emit(CustomersLoaded(customers: customers));
+      emit(CustomersLoaded(customers: customers, allCustomers: customers));
     } catch (e) {
-      emit(CustomersError(customers: state.customers, message: e.toString()));
+      emit(
+        CustomersError(
+          customers: state.customers,
+          allCustomers: state.allCustomers,
+          message: e.toString(),
+        ),
+      );
     }
   }
 
@@ -39,16 +45,23 @@ class CustomersBloc extends Bloc<CustomersEvent, CustomersState> {
     final query = event.query.trim().toLowerCase();
 
     if (query.isEmpty) {
-      emit(CustomersLoaded(customers: _allCustomers));
+      emit(
+        CustomersLoaded(customers: state.allCustomers, allCustomers: state.allCustomers),
+      );
       return;
     }
 
-    final filteredCustomers = _allCustomers.where((customer) {
+    final filteredCustomers = state.allCustomers.where((customer) {
       final name = customer.name.toLowerCase();
       final email = customer.email.toLowerCase();
-      return name.contains(query) || email.contains(query);
+      final phone = customer.phone.toLowerCase();
+      return name.contains(query) ||
+          email.contains(query) ||
+          phone.contains(query);
     }).toList();
 
-    emit(CustomersLoaded(customers: filteredCustomers));
+    emit(
+      CustomersLoaded(customers: filteredCustomers, allCustomers: state.allCustomers),
+    );
   }
 }
