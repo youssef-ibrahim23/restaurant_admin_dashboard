@@ -40,7 +40,7 @@ class CustomersPresenter extends StatelessWidget {
                       ),
                       SizedBox(height: 28.h),
                       Expanded(
-                        child: CustomersTable(customers: state.customers),
+                        child: SingleChildScrollView(child: CustomersTable(customers: state.customers)),
                       ),
                     ],
                   ),
