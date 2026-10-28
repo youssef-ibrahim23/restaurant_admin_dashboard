@@ -24,6 +24,11 @@ import '../../features/customers/data/service/customers_service.dart';
 import '../../features/customers/domain/repositories/customers_repository.dart';
 import '../../features/customers/domain/usecases/get_customers_usecase.dart';
 import '../../features/customers/presentation/BLoC/customers_bloc.dart';
+import '../../features/dashboard/data/repositories/dashboard_repository_impl.dart';
+import '../../features/dashboard/data/service/dashboard_service.dart';
+import '../../features/dashboard/domain/repositories/dashboard_repository.dart';
+import '../../features/dashboard/domain/usecases/dashboard_usecase.dart';
+import '../../features/dashboard/presentation/BLoC/dashboard_bloc.dart';
 
 final GetIt sl = GetIt.instance;
 
@@ -111,6 +116,20 @@ Future<void> setupServiceLocator() async {
     () => CustomersBloc(
       getCustomersUseCase: sl<GetCustomersUseCase>(),
     ),
+  );
+
+  // dashboard feature
+  sl.registerLazySingleton<DashboardService>(
+    () => DashboardService(supabaseClientService: sl<SupabaseClientService>()),
+  );
+  sl.registerLazySingleton<DashboardRepository>(
+    () => DashboardRepositoryImpl(dashboardService: sl<DashboardService>()),
+  );
+  sl.registerLazySingleton(
+    () => DashboardUseCase(dashboardRepository: sl<DashboardRepository>()),
+  );
+  sl.registerFactory(
+    () => DashboardBloc(dashboardUseCase: sl<DashboardUseCase>()),
   );
 
 }
