@@ -4,6 +4,7 @@ import 'package:restaurant_admin_dashboard/core/di/service_locator.dart';
 import 'package:restaurant_admin_dashboard/features/customers/presentation/UI/customers_presenter.dart';
 import 'package:restaurant_admin_dashboard/features/orders/presentation/UI/orders_presenter.dart';
 import 'package:restaurant_admin_dashboard/features/dashboard/presentation/UI/dashboard_presenter.dart';
+import 'package:restaurant_admin_dashboard/features/dashboard/presentation/UI/dashboard_presenter.dart';
 
 import '../../../restaurant_sections/presentation/UI/sections_presenter.dart';
 import '../BLoC/sidebar_bloc.dart';
@@ -19,6 +20,7 @@ class SidebarPresenter extends StatelessWidget {
     final List<Widget> screens = [
       const Center(child: Text('Dashboard')),
       const OrdersPresenter(),
+      const DashboardPresenter(),
       const DashboardPresenter(),
       const Center(child: Text('Orders')),
       const RestaurantsPresenter(),
