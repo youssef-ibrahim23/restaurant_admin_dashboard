@@ -38,6 +38,7 @@ final class MenuFormState extends Equatable {
   }
 
   MenuFormState copyWith({
+    int? selectedItemIndex,
     String? selectedCategory,
     bool? isAvailable,
     String? selectedPhoto,

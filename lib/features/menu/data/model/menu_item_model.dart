@@ -19,17 +19,24 @@ class MenuItemModel extends Equatable {
     required this.isAvailable,
   });
 
-  factory MenuItemModel.fromJson(Map<String, dynamic> json) {
+  factory MenuItemModel.fromJson(
+      Map<String, dynamic> json,
+      ) {
     return MenuItemModel(
       id: json['id'] as int?,
-      sectionId: json['section_id'],
+      sectionId: (json['section_id'] as num).toInt(),
+
       photo: (json['photo'] as String?)?.isNotEmpty == true
           ? json['photo'] as String
           : '🍔',
-      name: json['name'] as String,
+
+      name: json['name']?.toString() ?? '',
+
       price: (json['price'] as num).toDouble(),
-      category: json['category'] as String,
-      isAvailable: json['is_available'] as bool,
+
+      category: json['category']?.toString() ?? '',
+
+      isAvailable: json['is_available'] as bool? ?? false,
     );
   }
 
@@ -47,12 +54,12 @@ class MenuItemModel extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        sectionId,
-        photo,
-        name,
-        price,
-        category,
-        isAvailable,
-      ];
+    id,
+    sectionId,
+    photo,
+    name,
+    price,
+    category,
+    isAvailable,
+  ];
 }
