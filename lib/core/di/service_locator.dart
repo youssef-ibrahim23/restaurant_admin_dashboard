@@ -162,18 +162,6 @@ Future<void> setupServiceLocator() async {
       updateStatusUseCase: sl<UpdateStatusUseCase>(),
     ),
   );
-  // dashboard feature
-  sl.registerLazySingleton<DashboardService>(
-    () => DashboardService(supabaseClientService: sl<SupabaseClientService>()),
-  );
-  sl.registerLazySingleton<DashboardRepository>(
-    () => DashboardRepositoryImpl(dashboardService: sl<DashboardService>()),
-  );
-  sl.registerLazySingleton(
-    () => DashboardUseCase(dashboardRepository: sl<DashboardRepository>()),
-  );
-  sl.registerFactory(
-    () => DashboardBloc(dashboardUseCase: sl<DashboardUseCase>()),
-  );
+
 
 }

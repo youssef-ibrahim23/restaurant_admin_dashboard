@@ -15,6 +15,10 @@ class RevenueChart extends StatelessWidget {
     final maxValue = weeklyRevenue.values.isEmpty 
         ? 1.0 
         : weeklyRevenue.values.reduce((a, b) => a > b ? a : b);
+    
+    final maxRevenueDay = weeklyRevenue.entries.isEmpty 
+        ? null 
+        : weeklyRevenue.entries.reduce((a, b) => a.value > b.value ? a : b).key;
 
     return Container(
       padding: EdgeInsets.all(24.w),
@@ -48,7 +52,7 @@ class RevenueChart extends StatelessWidget {
                 final day = entry.value;
                 final revenue = weeklyRevenue[day] ?? 0.0;
                 final barHeight = maxValue > 0 ? (revenue / maxValue) * 160.h : 0.0;
-                final isHighlighted = day == 'Fri';
+                final isHighlighted = day == maxRevenueDay;
 
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.end,
