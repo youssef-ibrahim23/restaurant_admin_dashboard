@@ -2,8 +2,7 @@ import 'package:equatable/equatable.dart';
 
 sealed class OrdersEvent extends Equatable {}
 
-final class LoadOrders extends OrdersEvent{
-
+final class LoadOrders extends OrdersEvent {
   @override
   List<Object?> get props => [];
 }
@@ -11,7 +10,7 @@ final class LoadOrders extends OrdersEvent{
 final class SelectOrder extends OrdersEvent {
   final String orderId;
 
-   SelectOrder({required this.orderId});
+  SelectOrder({required this.orderId});
 
   @override
   List<Object?> get props => [orderId];
@@ -25,4 +24,13 @@ final class UpdateStatus extends OrdersEvent {
 
   @override
   List<Object?> get props => [orderId, status];
+}
+
+final class FilterOrders extends OrdersEvent {
+  final String status;
+
+  FilterOrders({required this.status});
+
+  @override
+  List<Object?> get props => [status];
 }

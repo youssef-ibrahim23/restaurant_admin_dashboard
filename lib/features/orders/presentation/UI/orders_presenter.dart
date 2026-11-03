@@ -6,6 +6,7 @@ import 'package:restaurant_admin_dashboard/features/orders/presentation/UI/widge
 import 'package:restaurant_admin_dashboard/features/orders/presentation/BLoC/orders_event.dart';
 import 'package:restaurant_admin_dashboard/features/orders/presentation/BLoC/orders_bloc.dart';
 import 'package:restaurant_admin_dashboard/features/orders/presentation/BLoC/orders_state.dart';
+import 'package:restaurant_admin_dashboard/features/orders/presentation/UI/widgets/filters_row.dart';
 import 'package:restaurant_admin_dashboard/features/orders/presentation/UI/widgets/table.dart';
 import 'package:restaurant_admin_dashboard/features/orders/presentation/UI/widgets/order_details.dart';
 
@@ -23,18 +24,19 @@ class OrdersPresenter extends StatelessWidget {
         backgroundColor: const Color(0xFFF7F5F1),
         body: BlocBuilder<OrdersBloc, OrdersState>(
           builder: (context, state) {
+            final displayedOrders = state.filteredOrders;
             OrderModel? selectedOrder;
             if (state.selectedOrderId != null) {
-              final index = state.orders.indexWhere(
+              final index = displayedOrders.indexWhere(
                 (order) => order.id == state.selectedOrderId,
               );
               if (index >= 0) {
-                selectedOrder = state.orders[index];
-              } else if (state.orders.isNotEmpty) {
-                selectedOrder = state.orders.first;
+                selectedOrder = displayedOrders[index];
+              } else if (displayedOrders.isNotEmpty) {
+                selectedOrder = displayedOrders.first;
               }
-            } else if (state.orders.isNotEmpty) {
-              selectedOrder = state.orders.first;
+            } else if (displayedOrders.isNotEmpty) {
+              selectedOrder = displayedOrders.first;
             }
 
             return Stack(
@@ -49,7 +51,9 @@ class OrdersPresenter extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Header(),
-                            SizedBox(height: 28.h),
+                            SizedBox(height: 20.h),
+                            const FiltersRow(),
+                            SizedBox(height: 20.h),
                             Expanded(
                               child:
                                   state is OrdersError && state.orders.isEmpty
@@ -76,8 +80,8 @@ class OrdersPresenter extends StatelessWidget {
                                       ),
                                     )
                                   : OrdersTable(
-                                      orders: state.orders,
-                                      selectedOrderId: state.selectedOrderId,
+                                      orders: displayedOrders,
+                                      selectedOrderId: selectedOrder?.id ?? state.selectedOrderId,
                                       onOrderSelected: (orderId) {
                                         context.read<OrdersBloc>().add(
                                           SelectOrder(orderId: orderId),
