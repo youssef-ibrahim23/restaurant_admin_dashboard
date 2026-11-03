@@ -1,6 +1,8 @@
+
+import 'package:equatable/equatable.dart';
 import 'order_item_model.dart';
 
-class OrderModel {
+class OrderModel extends Equatable {
   final String id;
   final String userId;
   final String userName;
@@ -21,32 +23,23 @@ class OrderModel {
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
     final user = json['users'];
-
     final orderItemsJson = json['order_items'] as List? ?? [];
 
     return OrderModel(
       id: json['id'].toString(),
-
       userId: json['user_id'].toString(),
-
       userName: user is Map
           ? user['name']?.toString() ?? 'Unknown'
           : 'Unknown',
-
       totalPrice: (json['total_price'] as num).toDouble(),
-
       status: json['status']?.toString() ?? '',
-
-      createdAt: DateTime.parse(
-        json['created_at'].toString(),
-      ),
-
+      createdAt: DateTime.parse(json['created_at'].toString()),
       orderItems: orderItemsJson
           .map(
             (item) => OrderItemModel.fromJson(
-          Map<String, dynamic>.from(item as Map),
-        ),
-      )
+              Map<String, dynamic>.from(item as Map),
+            ),
+          )
           .toList(),
     );
   }
@@ -80,4 +73,15 @@ class OrderModel {
       orderItems: orderItems ?? this.orderItems,
     );
   }
+
+  @override
+  List<Object?> get props => [
+        id,
+        userId,
+        userName,
+        totalPrice,
+        status,
+        createdAt,
+        orderItems,
+      ];
 }
