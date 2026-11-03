@@ -4,6 +4,8 @@ import 'package:restaurant_admin_dashboard/core/di/service_locator.dart';
 import 'package:restaurant_admin_dashboard/features/customers/presentation/UI/customers_presenter.dart';
 import 'package:restaurant_admin_dashboard/features/orders/presentation/UI/orders_presenter.dart';
 import 'package:restaurant_admin_dashboard/features/promos/presentation/UI/promos_presentation.dart';
+import 'package:restaurant_admin_dashboard/features/settings/presentation/UI/settings_presenter.dart';
+import 'package:restaurant_admin_dashboard/features/promos/presentation/UI/promos_presentation.dart';
 
 import '../../../dashboard/presentation/UI/dashboard_presenter.dart';
 import '../../../restaurant_sections/presentation/UI/sections_presenter.dart';
@@ -24,7 +26,7 @@ class SidebarPresenter extends StatelessWidget {
       const Center(child: Text('Drivers')),
       const CustomersPresenter(),
       const PromosPresenter(),
-      const Center(child: Text('Settings')),
+      const SettingsPresenter(),
     ];
 
     return BlocProvider(
