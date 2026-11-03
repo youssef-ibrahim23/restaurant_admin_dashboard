@@ -1,5 +1,6 @@
 import 'order_item_model.dart';
 
+// TODO: Implement Equatable or override == and hashCode. Since OrderModel is held within OrdersState (which extends Equatable), lack of value equality causes Equatable to compare lists by reference identity, leading to potential unnecessary rebuilds or missed state changes.
 class OrderModel {
   final String id;
   final String userId;
