@@ -43,6 +43,14 @@ import '../../features/promos/domain/usecases/delete_promo_usecase.dart';
 import '../../features/promos/domain/usecases/edit_promo_usecase.dart';
 import '../../features/promos/domain/usecases/get_promos_usecase.dart';
 import '../../features/promos/presentation/BLoC/promos_bloc.dart';
+import '../../features/settings/data/repositories/settings_repository_impl.dart';
+import '../../features/settings/data/service/settings_service.dart';
+import '../../features/settings/domain/repositories/settings_repository.dart';
+import '../../features/settings/domain/usecases/change_password_usecase.dart';
+import '../../features/settings/domain/usecases/get_settings_usecase.dart';
+import '../../features/settings/domain/usecases/logout_usecase.dart';
+import '../../features/settings/domain/usecases/update_settings_usecase.dart';
+import '../../features/settings/presentation/BLoC/settings_bloc.dart';
 
 final GetIt sl = GetIt.instance;
 
@@ -193,4 +201,33 @@ Future<void> setupServiceLocator() async {
       deletePromoUseCase: sl<DeletePromoUseCase>(),
     ),
   );
+
+  // settings feature
+  sl.registerLazySingleton<SettingsService>(
+    () => SettingsService(supabaseClientService: sl<SupabaseClientService>()),
+  );
+  sl.registerLazySingleton<SettingsRepository>(
+    () => SettingsRepositoryImpl(settingsService: sl<SettingsService>()),
+  );
+  sl.registerLazySingleton(
+    () => GetSettingsUseCase(repository: sl<SettingsRepository>()),
+  );
+  sl.registerLazySingleton(
+    () => UpdateSettingsUseCase(repository: sl<SettingsRepository>()),
+  );
+  sl.registerLazySingleton(
+    () => ChangePasswordUseCase(repository: sl<SettingsRepository>()),
+  );
+  sl.registerLazySingleton(
+    () => LogoutUseCase(repository: sl<SettingsRepository>()),
+  );
+  sl.registerFactory(
+    () => SettingsBloc(
+      getSettingsUseCase: sl<GetSettingsUseCase>(),
+      updateSettingsUseCase: sl<UpdateSettingsUseCase>(),
+      changePasswordUseCase: sl<ChangePasswordUseCase>(),
+      logoutUseCase: sl<LogoutUseCase>(),
+    ),
+  );
+
 }
