@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_admin_dashboard/core/di/service_locator.dart';
 import 'package:restaurant_admin_dashboard/features/customers/presentation/UI/customers_presenter.dart';
+import 'package:restaurant_admin_dashboard/features/drivers/presentation/UI/drivers_presenter.dart';
 import 'package:restaurant_admin_dashboard/features/orders/presentation/UI/orders_presenter.dart';
 import 'package:restaurant_admin_dashboard/features/promos/presentation/UI/promos_presentation.dart';
 import 'package:restaurant_admin_dashboard/features/settings/presentation/UI/settings_presenter.dart';
@@ -23,7 +24,7 @@ class SidebarPresenter extends StatelessWidget {
       const DashboardPresenter(),
       const OrdersPresenter(),
       const RestaurantsPresenter(),
-      const Center(child: Text('Drivers')),
+      const DriversPresenter(),
       const CustomersPresenter(),
       const PromosPresenter(),
       const SettingsPresenter(),

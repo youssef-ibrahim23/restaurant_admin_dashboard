@@ -29,6 +29,11 @@ import '../../features/dashboard/data/service/dashboard_service.dart';
 import '../../features/dashboard/domain/repositories/dashboard_repository.dart';
 import '../../features/dashboard/domain/usecases/dashboard_usecase.dart';
 import '../../features/dashboard/presentation/BLoC/dashboard_bloc.dart';
+import '../../features/drivers/data/repositories/drivers_repository_impl.dart';
+import '../../features/drivers/data/service/driver_service.dart';
+import '../../features/drivers/domain/repositories/drivers_repository.dart';
+import '../../features/drivers/domain/usecases/get_drivers_usecase.dart';
+import '../../features/drivers/presentation/BLoC/drivers_bloc.dart';
 import '../../features/orders/data/repositories/orders_repository_impl.dart';
 import '../../features/orders/data/service/orders_service.dart';
 import '../../features/orders/domain/repositories/orders_repository.dart';
@@ -227,6 +232,24 @@ Future<void> setupServiceLocator() async {
       updateSettingsUseCase: sl<UpdateSettingsUseCase>(),
       changePasswordUseCase: sl<ChangePasswordUseCase>(),
       logoutUseCase: sl<LogoutUseCase>(),
+    ),
+  );
+
+  // drivers feature
+  sl.registerLazySingleton<DriversService>(
+    () => DriversService(supabaseClientService: sl<SupabaseClientService>()),
+  );
+
+  sl.registerLazySingleton<DriversRepository>(
+    () => DriversRepositoryImpl(driversService: sl<DriversService>()),
+  );
+  sl.registerLazySingleton(
+    () => GetDriversUseCase(driversRepository: sl<DriversRepository>()),
+  );
+
+  sl.registerFactory(
+    () => DriversBloc(
+      getDriversUseCase: sl<GetDriversUseCase>(),
     ),
   );
 
