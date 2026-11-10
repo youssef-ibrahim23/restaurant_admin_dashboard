@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:restaurant_admin_dashboard/core/di/service_locator.dart';
 import 'package:restaurant_admin_dashboard/core/shared/widgets/loading.dart';
-import 'package:restaurant_admin_dashboard/features/menu/data/model/menu_item_model.dart';
 import 'package:restaurant_admin_dashboard/features/menu/data/model/menu_model.dart';
 import 'package:restaurant_admin_dashboard/features/menu/presentation/BLoC/menu_bloc.dart';
 import 'package:restaurant_admin_dashboard/features/menu/presentation/BLoC/menu_event.dart';

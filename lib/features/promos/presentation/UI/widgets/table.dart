@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:restaurant_admin_dashboard/features/promos/data/model/promos_model.dart';
 import 'package:restaurant_admin_dashboard/features/promos/presentation/BLoC/promos_bloc.dart';
 import 'package:restaurant_admin_dashboard/features/promos/presentation/BLoC/promos_event.dart';
 import 'package:restaurant_admin_dashboard/features/promos/presentation/BLoC/promos_state.dart';

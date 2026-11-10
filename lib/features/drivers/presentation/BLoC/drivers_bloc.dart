@@ -8,7 +8,7 @@ class DriversBloc extends Bloc<DriversEvent, DriversState> {
 
   final GetDriversUseCase _getDriversUseCase;
 
-  DriversBloc({required this._getDriversUseCase}) : super(const DriversInitial(drivers: [], allDrivers: [])) {
+  DriversBloc({required this._getDriversUseCase}) : super(const DriversInitial(drivers: [])) {
     on<LoadDrivers>(_onLoadDrivers);
   }
 
@@ -19,18 +19,16 @@ class DriversBloc extends Bloc<DriversEvent, DriversState> {
     emit(
       DriversLoading(
         drivers: state.drivers,
-        allDrivers: state.allDrivers,
       ),
     );
 
     try {
       final drivers = await _getDriversUseCase.call();
-      emit(DriversLoaded(drivers: drivers, allDrivers: drivers));
+      emit(DriversLoaded(drivers: drivers));
     } catch (e) {
       emit(
         DriversError(
           drivers: state.drivers,
-          allDrivers: state.allDrivers,
           message: e.toString(),
         ),
       );

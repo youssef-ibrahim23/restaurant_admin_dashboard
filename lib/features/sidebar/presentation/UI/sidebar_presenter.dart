@@ -6,7 +6,6 @@ import 'package:restaurant_admin_dashboard/features/drivers/presentation/UI/driv
 import 'package:restaurant_admin_dashboard/features/orders/presentation/UI/orders_presenter.dart';
 import 'package:restaurant_admin_dashboard/features/promos/presentation/UI/promos_presentation.dart';
 import 'package:restaurant_admin_dashboard/features/settings/presentation/UI/settings_presenter.dart';
-import 'package:restaurant_admin_dashboard/features/promos/presentation/UI/promos_presentation.dart';
 
 import '../../../dashboard/presentation/UI/dashboard_presenter.dart';
 import '../../../restaurant_sections/presentation/UI/sections_presenter.dart';

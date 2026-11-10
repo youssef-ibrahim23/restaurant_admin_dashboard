@@ -3,46 +3,41 @@ import 'package:restaurant_admin_dashboard/features/drivers/data/model/driver_mo
 
 sealed class DriversState extends Equatable {
   final List<DriverModel> drivers;
-  final List<DriverModel> allDrivers;
 
   const DriversState({
     required this.drivers,
-    required this.allDrivers,
   });
 
-  int get onlineCount => allDrivers
+  int get onlineCount => drivers
       .where((driver) {
         final status = driver.status.toLowerCase();
         return status == 'available' || status == 'delivering';
       })
       .length;
 
-  int get offlineCount => allDrivers
+  int get offlineCount => drivers
       .where((driver) => driver.status.toLowerCase() == 'offline')
       .length;
 
   @override
-  List<Object?> get props => [drivers, allDrivers];
+  List<Object?> get props => [drivers];
 }
 
 final class DriversInitial extends DriversState {
   const DriversInitial({
     required super.drivers,
-    required super.allDrivers,
   });
 }
 
 final class DriversLoading extends DriversState {
   const DriversLoading({
     required super.drivers,
-    required super.allDrivers,
   });
 }
 
 final class DriversLoaded extends DriversState {
   const DriversLoaded({
     required super.drivers,
-    required super.allDrivers,
   });
 }
 
@@ -51,7 +46,6 @@ final class DriversError extends DriversState {
 
   const DriversError({
     required super.drivers,
-    required super.allDrivers,
     required this.message,
   });
 
