@@ -10,6 +10,8 @@ sealed class DriversState extends Equatable {
     required this.allDrivers,
   });
 
+  // TODO: Add helper getters or computed properties on state (e.g. onlineCount, offlineCount) to avoid computing business metrics in UI.
+
   @override
   List<Object?> get props => [drivers, allDrivers];
 }

@@ -70,6 +70,7 @@ class DriversPresenter extends StatelessWidget {
     );
   }
 
+  // TODO: Move business logic (computing online/offline counts) from UI presenter to BLoC state getters.
   int _getOnlineCount(List<DriverModel> drivers) {
     return drivers.where((d) => d.status.toLowerCase() == 'available' || d.status.toLowerCase() == 'delivering').length;
   }
