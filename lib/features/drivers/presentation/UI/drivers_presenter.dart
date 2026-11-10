@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:restaurant_admin_dashboard/features/drivers/data/model/driver_model.dart';
 import 'package:restaurant_admin_dashboard/features/drivers/presentation/BLoC/drivers_bloc.dart';
 import 'package:restaurant_admin_dashboard/features/drivers/presentation/BLoC/drivers_event.dart';
 import 'package:restaurant_admin_dashboard/features/drivers/presentation/BLoC/drivers_state.dart';
@@ -31,8 +30,8 @@ class DriversPresenter extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       DriversHeader(
-                        onlineCount: _getOnlineCount(state.allDrivers),
-                        offlineCount: _getOfflineCount(state.allDrivers),
+                        onlineCount: state.onlineCount,
+                        offlineCount: state.offlineCount,
                         onAddDriver: () {
                         },
                       ),
@@ -68,14 +67,5 @@ class DriversPresenter extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  // TODO: Move business logic (computing online/offline counts) from UI presenter to BLoC state getters.
-  int _getOnlineCount(List<DriverModel> drivers) {
-    return drivers.where((d) => d.status.toLowerCase() == 'available' || d.status.toLowerCase() == 'delivering').length;
-  }
-
-  int _getOfflineCount(List<DriverModel> drivers) {
-    return drivers.where((d) => d.status.toLowerCase() == 'offline').length;
   }
 }
