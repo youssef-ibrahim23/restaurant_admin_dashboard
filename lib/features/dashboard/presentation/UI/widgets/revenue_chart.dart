@@ -48,7 +48,6 @@ class RevenueChart extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: days.asMap().entries.map((entry) {
-                final index = entry.key;
                 final day = entry.value;
                 final revenue = weeklyRevenue[day] ?? 0.0;
                 final barHeight = maxValue > 0 ? (revenue / maxValue) * 160.h : 0.0;

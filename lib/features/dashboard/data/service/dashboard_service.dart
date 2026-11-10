@@ -1,5 +1,3 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
-
 import '../../../../core/network/supabase_client.dart';
 import '../model/dashboard_model.dart';
 
