@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:restaurant_admin_dashboard/core/di/service_locator.dart';
+import 'package:restaurant_admin_dashboard/core/shared/widgets/loading.dart';
+import 'package:restaurant_admin_dashboard/core/utils/responsive.dart';
+import 'package:restaurant_admin_dashboard/features/customers/presentation/BLoC/customers_bloc.dart';
 import 'package:restaurant_admin_dashboard/features/customers/presentation/BLoC/customers_event.dart';
 import 'package:restaurant_admin_dashboard/features/customers/presentation/BLoC/customers_state.dart';
-import 'package:restaurant_admin_dashboard/features/customers/presentation/UI/widgets/search_field.dart';
-
-import '../../../../core/di/service_locator.dart';
-import '../../../../core/shared/widgets/loading.dart';
-import '../UI/widgets/header.dart';
-import '../BLoC/customers_bloc.dart';
-import 'widgets/table.dart';
+import 'package:restaurant_admin_dashboard/features/customers/presentation/UI/widgets/desktop_view.dart';
+import 'package:restaurant_admin_dashboard/features/customers/presentation/UI/widgets/mobile_view.dart';
 
 class CustomersPresenter extends StatelessWidget {
   const CustomersPresenter({super.key});
@@ -24,25 +22,22 @@ class CustomersPresenter extends StatelessWidget {
           builder: (context, state) {
             return Stack(
               children: [
-                Padding(
-                  padding: EdgeInsets.all(32.w),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Header(),
-                      SizedBox(height: 28.h),
-                      SearchField(
-                        onChanged: (query) {
-                          context.read<CustomersBloc>().add(
-                            SearchCustomers(query),
-                          );
-                        },
-                      ),
-                      SizedBox(height: 28.h),
-                      Expanded(
-                        child: SingleChildScrollView(child: CustomersTable(customers: state.customers)),
-                      ),
-                    ],
+                AdaptiveView(
+                  desktop: CustomersDesktopView(
+                    customers: state.customers,
+                    onSearchChanged: (query) {
+                      context.read<CustomersBloc>().add(
+                        SearchCustomers(query),
+                      );
+                    },
+                  ),
+                  mobile: CustomersMobileView(
+                    customers: state.customers,
+                    onSearchChanged: (query) {
+                      context.read<CustomersBloc>().add(
+                        SearchCustomers(query),
+                      );
+                    },
                   ),
                 ),
                 if (state is CustomersLoading && state.customers.isEmpty)

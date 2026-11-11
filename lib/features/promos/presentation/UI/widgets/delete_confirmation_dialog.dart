@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:restaurant_admin_dashboard/core/utils/responsive.dart';
 import 'package:restaurant_admin_dashboard/features/promos/presentation/BLoC/promos_bloc.dart';
 import 'package:restaurant_admin_dashboard/features/promos/presentation/BLoC/promos_event.dart';
 
@@ -14,7 +15,7 @@ class DeletePromoConfirmationDialog {
       title: 'Delete Promo',
       desc:
           'Are you sure you want to delete promo "$promoCode"?\n\nThis action cannot be undone.',
-      width: 450.w,
+      width: context.adaptiveDialogWidth(450.w),
       padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
       descTextStyle: TextStyle(
         fontSize: 14.sp,

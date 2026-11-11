@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:restaurant_admin_dashboard/core/utils/responsive.dart';
 import 'package:restaurant_admin_dashboard/features/restaurant_sections/presentation/BLoC/sections_bloc.dart';
 import 'package:restaurant_admin_dashboard/features/restaurant_sections/presentation/BLoC/sections_event.dart';
 
@@ -13,7 +14,7 @@ class DeleteConfirmationDialog {
       dialogType: DialogType.noHeader,
       title: 'Delete Section',
       desc: 'Are you sure you want to delete "$sectionName"?\n\nThis action cannot be undone.',
-      width: 450.w,
+      width: context.adaptiveDialogWidth(450.w),
       padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
       descTextStyle: TextStyle(
         fontSize: 14.sp,

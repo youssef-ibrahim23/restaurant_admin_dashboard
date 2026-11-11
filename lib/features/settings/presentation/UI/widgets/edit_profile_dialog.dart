@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:restaurant_admin_dashboard/core/utils/responsive.dart';
 import '../../../data/model/restaurant_settings_model.dart';
 import '../../BLoC/settings_bloc.dart';
 import '../../BLoC/settings_event.dart';
@@ -28,7 +29,7 @@ class EditProfileDialog {
       context: context,
       dialogType: DialogType.noHeader,
       animType: AnimType.scale,
-      width: 580.w,
+      width: context.adaptiveDialogWidth(580.w),
       padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
       body: StatefulBuilder(
         builder: (context, setState) {

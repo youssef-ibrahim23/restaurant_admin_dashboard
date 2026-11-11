@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:restaurant_admin_dashboard/core/utils/responsive.dart';
 import 'package:restaurant_admin_dashboard/features/promos/data/model/promos_model.dart';
 import 'package:restaurant_admin_dashboard/features/promos/presentation/BLoC/promos_bloc.dart';
 import 'package:restaurant_admin_dashboard/features/promos/presentation/BLoC/promos_event.dart';
@@ -22,7 +23,7 @@ class PromoDialog {
       animType: AnimType.scale,
       title: 'Add New Promo',
       desc: 'Create a new promo code for discounts',
-      width: 500.w,
+      width: context.adaptiveDialogWidth(500.w),
       padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
       body: StatefulBuilder(
         builder: (context, setState) {
@@ -253,7 +254,7 @@ class PromoDialog {
       animType: AnimType.scale,
       title: 'Edit Promo',
       desc: 'Update promo details',
-      width: 500.w,
+      width: context.adaptiveDialogWidth(500.w),
       padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
       body: StatefulBuilder(
         builder: (context, setState) {

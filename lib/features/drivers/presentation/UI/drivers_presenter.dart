@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:restaurant_admin_dashboard/core/di/service_locator.dart';
+import 'package:restaurant_admin_dashboard/core/shared/widgets/loading.dart';
+import 'package:restaurant_admin_dashboard/core/utils/responsive.dart';
 import 'package:restaurant_admin_dashboard/features/drivers/presentation/BLoC/drivers_bloc.dart';
 import 'package:restaurant_admin_dashboard/features/drivers/presentation/BLoC/drivers_event.dart';
 import 'package:restaurant_admin_dashboard/features/drivers/presentation/BLoC/drivers_state.dart';
-
-import '../../../../core/di/service_locator.dart';
-import '../../../../core/shared/widgets/loading.dart';
-import 'widgets/driver_list.dart';
-import 'widgets/drivers_map.dart';
-import 'widgets/header.dart';
+import 'package:restaurant_admin_dashboard/features/drivers/presentation/UI/widgets/desktop_view.dart';
+import 'package:restaurant_admin_dashboard/features/drivers/presentation/UI/widgets/mobile_view.dart';
 
 class DriversPresenter extends StatelessWidget {
   const DriversPresenter({super.key});
@@ -24,39 +22,18 @@ class DriversPresenter extends StatelessWidget {
           builder: (context, state) {
             return Stack(
               children: [
-                Padding(
-                  padding: EdgeInsets.all(32.w),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      DriversHeader(
-                        onlineCount: state.onlineCount,
-                        offlineCount: state.offlineCount,
-                        onAddDriver: () {
-                        },
-                      ),
-                      SizedBox(height: 28.h),
-                      Expanded(
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Left panel - Driver list
-                            Expanded(
-                              flex: 1,
-                              child: SingleChildScrollView(
-                                child: DriverList(drivers: state.drivers),
-                              ),
-                            ),
-                            SizedBox(width: 20.w),
-                            // Right panel - Map
-                            Expanded(
-                              flex: 1,
-                              child: const DriversMap(),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                AdaptiveView(
+                  desktop: DriversDesktopView(
+                    onlineCount: state.onlineCount,
+                    offlineCount: state.offlineCount,
+                    drivers: state.drivers,
+                    onAddDriver: () {},
+                  ),
+                  mobile: DriversMobileView(
+                    onlineCount: state.onlineCount,
+                    offlineCount: state.offlineCount,
+                    drivers: state.drivers,
+                    onAddDriver: () {},
                   ),
                 ),
                 if (state is DriversLoading && state.drivers.isEmpty)

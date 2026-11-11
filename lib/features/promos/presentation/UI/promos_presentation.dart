@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:restaurant_admin_dashboard/core/di/service_locator.dart';
 import 'package:restaurant_admin_dashboard/core/shared/widgets/loading.dart';
+import 'package:restaurant_admin_dashboard/core/utils/responsive.dart';
 import 'package:restaurant_admin_dashboard/features/promos/presentation/BLoC/promos_bloc.dart';
 import 'package:restaurant_admin_dashboard/features/promos/presentation/BLoC/promos_event.dart';
 import 'package:restaurant_admin_dashboard/features/promos/presentation/BLoC/promos_state.dart';
-import 'package:restaurant_admin_dashboard/features/promos/presentation/UI/widgets/header.dart';
-import 'package:restaurant_admin_dashboard/features/promos/presentation/UI/widgets/table.dart';
+import 'package:restaurant_admin_dashboard/features/promos/presentation/UI/widgets/desktop_view.dart';
+import 'package:restaurant_admin_dashboard/features/promos/presentation/UI/widgets/mobile_view.dart';
 
 class PromosPresenter extends StatelessWidget {
   const PromosPresenter({super.key});
@@ -47,18 +47,9 @@ class PromosPresenter extends StatelessWidget {
             builder: (context, state) {
               return Stack(
                 children: [
-                  Padding(
-                    padding: EdgeInsets.all(32.w),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Header(),
-                        SizedBox(height: 28.h),
-                        const Expanded(
-                          child: PromosTable(),
-                        ),
-                      ],
-                    ),
+                  AdaptiveView(
+                    desktop: const PromosDesktopView(),
+                    mobile: const PromosMobileView(),
                   ),
                   if (state is PromosLoading && state.promos.isEmpty)
                     Loading(),
