@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:restaurant_admin_dashboard/core/di/service_locator.dart';
 import 'package:restaurant_admin_dashboard/core/shared/widgets/loading.dart';
+import '../../../login/presentation/UI/login_presenter.dart';
 import '../BLoC/settings_bloc.dart';
 import '../BLoC/settings_event.dart';
 import '../BLoC/settings_state.dart';
@@ -37,21 +38,7 @@ class SettingsPresenter extends StatelessWidget {
               ),
             );
           } else if (state is LogoutSuccess) {
-            AwesomeDialog(
-              context: context,
-              dialogType: DialogType.noHeader,
-              animType: AnimType.scale,
-              title: 'Logged Out',
-              desc:
-                  'You have been logged out successfully.',
-              width: 450.w,
-              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-              btnOkText: 'OK',
-              btnOkColor: const Color(0xFFFD5B22),
-              btnOkOnPress: () {
-                context.read<SettingsBloc>().add(LoadSettings());
-              },
-            ).show();
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPresenter()));
           }
         },
         child: Scaffold(
