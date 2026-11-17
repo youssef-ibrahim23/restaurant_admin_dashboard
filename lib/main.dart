@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:restaurant_admin_dashboard/features/login/presentation/UI/login_presenter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:restaurant_admin_dashboard/core/di/service_locator.dart';
 
@@ -40,7 +41,7 @@ class MyApp extends StatelessWidget {
               seedColor: const Color(0xFFFD5B22),
             ),
           ),
-          home: const SidebarPresenter(),
+          home: LoginPresenter(),
         );
       },
     );
