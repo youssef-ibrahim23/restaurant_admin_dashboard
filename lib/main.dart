@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:restaurant_admin_dashboard/features/login/presentation/UI/login_presenter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:restaurant_admin_dashboard/core/di/service_locator.dart';
-
-import 'features/sidebar/presentation/UI/sidebar_presenter.dart';
+import 'package:restaurant_admin_dashboard/features/login/presentation/UI/login_presenter.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

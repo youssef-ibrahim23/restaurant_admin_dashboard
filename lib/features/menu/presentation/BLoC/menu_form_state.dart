@@ -3,6 +3,7 @@ import 'package:restaurant_admin_dashboard/features/menu/data/model/menu_item_mo
 
 final class MenuFormState extends Equatable {
   final int? selectedItemIndex;
+  final bool isCreating;
   final String selectedCategory;
   final bool isAvailable;
   final String selectedPhoto;
@@ -15,6 +16,7 @@ final class MenuFormState extends Equatable {
 
   const MenuFormState({
     this.selectedItemIndex,
+    this.isCreating = false,
     this.selectedCategory = 'Burger',
     this.isAvailable = true,
     this.selectedPhoto = '🍔',
@@ -39,6 +41,7 @@ final class MenuFormState extends Equatable {
 
   MenuFormState copyWith({
     int? selectedItemIndex,
+    bool? isCreating,
     String? selectedCategory,
     bool? isAvailable,
     String? selectedPhoto,
@@ -55,6 +58,7 @@ final class MenuFormState extends Equatable {
   }) {
     return MenuFormState(
       selectedItemIndex: selectedItemIndex,
+      isCreating: isCreating ?? this.isCreating,
       selectedCategory: selectedCategory ?? this.selectedCategory,
       isAvailable: isAvailable ?? this.isAvailable,
       selectedPhoto: selectedPhoto ?? this.selectedPhoto,
@@ -72,6 +76,7 @@ final class MenuFormState extends Equatable {
   @override
   List<Object?> get props => [
     selectedItemIndex,
+    isCreating,
     selectedCategory,
     isAvailable,
     selectedPhoto,

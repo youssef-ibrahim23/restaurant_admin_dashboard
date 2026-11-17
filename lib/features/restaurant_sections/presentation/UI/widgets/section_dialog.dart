@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:restaurant_admin_dashboard/core/utils/responsive.dart';
 import 'package:restaurant_admin_dashboard/features/restaurant_sections/data/model/section_model.dart';
 import 'package:restaurant_admin_dashboard/features/restaurant_sections/presentation/BLoC/sections_bloc.dart';
 import 'package:restaurant_admin_dashboard/features/restaurant_sections/presentation/BLoC/sections_event.dart';
@@ -19,7 +20,7 @@ class SectionDialog {
       animType: AnimType.scale,
       title: 'Add New Section',
       desc: 'Create a new menu section for your restaurant',
-      width: 500.w,
+      width: context.adaptiveDialogWidth(500.w),
       padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
       body: StatefulBuilder(
         builder: (context, setState) {
@@ -189,7 +190,7 @@ class SectionDialog {
       animType: AnimType.scale,
       title: 'Edit Section',
       desc: 'Update section details',
-      width: 500.w,
+      width: context.adaptiveDialogWidth(500.w),
       padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
       body: StatefulBuilder(
         builder: (context, setState) {

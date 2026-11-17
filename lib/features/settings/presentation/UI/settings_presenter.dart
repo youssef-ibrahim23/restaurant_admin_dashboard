@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:restaurant_admin_dashboard/core/di/service_locator.dart';
 import 'package:restaurant_admin_dashboard/core/shared/widgets/loading.dart';
+import 'package:restaurant_admin_dashboard/core/utils/responsive.dart';
 import '../../../login/presentation/UI/login_presenter.dart';
 import '../BLoC/settings_bloc.dart';
 import '../BLoC/settings_event.dart';
 import '../BLoC/settings_state.dart';
-import 'widgets/header.dart';
-import 'widgets/restaurant_profile_card.dart';
-import 'widgets/security_session_card.dart';
+import 'widgets/desktop_view.dart';
+import 'widgets/mobile_view.dart';
 
 class SettingsPresenter extends StatelessWidget {
   const SettingsPresenter({super.key});
@@ -47,19 +45,9 @@ class SettingsPresenter extends StatelessWidget {
             builder: (context, state) {
               return Stack(
                 children: [
-                  SingleChildScrollView(
-                    padding: EdgeInsets.all(32.w),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SettingsHeader(),
-                        SizedBox(height: 24.h),
-                        RestaurantProfileCard(settings: state.settings),
-                        SizedBox(height: 24.h),
-                        const SecuritySessionCard(),
-                        SizedBox(height: 32.h),
-                      ],
-                    ),
+                  AdaptiveView(
+                    desktop: SettingsDesktopView(settings: state.settings),
+                    mobile: SettingsMobileView(settings: state.settings),
                   ),
                   if (state is SettingsLoading) Loading(),
                 ],

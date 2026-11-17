@@ -3,22 +3,53 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:restaurant_admin_dashboard/core/di/service_locator.dart';
 import 'package:restaurant_admin_dashboard/core/shared/widgets/loading.dart';
+import 'package:restaurant_admin_dashboard/core/utils/responsive.dart';
+import 'package:restaurant_admin_dashboard/features/restaurant_sections/data/model/section_model.dart';
 import 'package:restaurant_admin_dashboard/features/restaurant_sections/presentation/BLoC/sections_bloc.dart';
 import 'package:restaurant_admin_dashboard/features/restaurant_sections/presentation/BLoC/sections_event.dart';
 import 'package:restaurant_admin_dashboard/features/restaurant_sections/presentation/BLoC/sections_state.dart';
-import 'package:restaurant_admin_dashboard/features/restaurant_sections/presentation/UI/widgets/header.dart';
-import 'package:restaurant_admin_dashboard/features/restaurant_sections/presentation/UI/widgets/table.dart';
+import 'package:restaurant_admin_dashboard/features/restaurant_sections/presentation/UI/widgets/desktop_view.dart';
+import 'package:restaurant_admin_dashboard/features/restaurant_sections/presentation/UI/widgets/mobile_view.dart';
 import 'package:restaurant_admin_dashboard/features/menu/presentation/UI/menu_presenter.dart';
 
 class RestaurantsPresenter extends StatelessWidget {
   const RestaurantsPresenter({super.key});
+
+  void _openMenu(BuildContext context, SectionModel section) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => Scaffold(
+          backgroundColor: const Color(0xFFF7F4EF),
+          appBar: AppBar(
+            surfaceTintColor: const Color(0xFFF7F4EF),
+            backgroundColor: const Color(0xFFF7F4EF),
+            elevation: 0,
+            leading: IconButton(
+              icon: Icon(
+                Icons.arrow_back_ios,
+                size: 20.sp,
+                color: const Color(0xFF211E1C),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ),
+          body: MenuPresenter(
+            sectionModel: section,
+            showScaffold: false,
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => sl<SectionsBloc>()..add(LoadSections()),
       child: BlocListener<SectionsBloc, SectionsState>(
-        listener: (context, state){
+        listener: (context, state) {
           if (state is SectionActionSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -48,49 +79,18 @@ class RestaurantsPresenter extends StatelessWidget {
             builder: (context, state) {
               return Stack(
                 children: [
-                  Padding(
-                    padding: EdgeInsets.all(32.w),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Header(),
-                        SizedBox(height: 28.h),
-                        Expanded(
-                          child: RestaurantsTable(
-                            onManageMenu: (section) {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => Scaffold(
-                                    backgroundColor: const Color(0xFFF7F4EF),
-                                    appBar: AppBar(
-                                      surfaceTintColor: const Color(0xFFF7F4EF),
-                                      backgroundColor: const Color(0xFFF7F4EF),
-                                      elevation: 0,
-                                      leading: IconButton(
-                                        icon: Icon(
-                                          Icons.arrow_back_ios,
-                                          size: 20.sp,
-                                          color: const Color(0xFF211E1C),
-                                        ),
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                      ),
-                                    ),
-                                    body: MenuPresenter(
-                                      sectionModel: section,
-                                      showScaffold: false,
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ],
+                  AdaptiveView(
+                    desktop: SectionsDesktopView(
+                      onManageMenu: (section) =>
+                          _openMenu(context, section),
+                    ),
+                    mobile: SectionsMobileView(
+                      onManageMenu: (section) =>
+                          _openMenu(context, section),
                     ),
                   ),
-                  if (state is SectionsLoading && state.sections.isEmpty) Loading(),
+                  if (state is SectionsLoading && state.sections.isEmpty)
+                    Loading(),
                 ],
               );
             },

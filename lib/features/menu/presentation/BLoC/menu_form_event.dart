@@ -12,6 +12,13 @@ final class MenuFormReset extends MenuFormEvent {
   List<Object?> get props => [];
 }
 
+final class MenuFormAddNew extends MenuFormEvent {
+  const MenuFormAddNew();
+
+  @override
+  List<Object?> get props => [];
+}
+
 final class MenuFormItemSelected extends MenuFormEvent {
   final MenuItemModel item;
   final int index;

@@ -7,6 +7,9 @@ import 'menu_form_state.dart';
 class MenuFormBloc extends Bloc<MenuFormEvent, MenuFormState> {
   MenuFormBloc() : super(const MenuFormState()) {
     on<MenuFormReset>((event, emit) => emit(const MenuFormState()));
+    on<MenuFormAddNew>(
+      (event, emit) => emit(const MenuFormState(isCreating: true)),
+    );
     on<MenuFormItemSelected>(
       (event, emit) => emit(MenuFormState.fromItem(event.item, event.index)),
     );

@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:restaurant_admin_dashboard/core/shared/widgets/loading.dart';
-import 'package:restaurant_admin_dashboard/features/orders/presentation/UI/widgets/header.dart';
-import 'package:restaurant_admin_dashboard/features/orders/presentation/BLoC/orders_event.dart';
+import 'package:restaurant_admin_dashboard/core/utils/responsive.dart';
+import 'package:restaurant_admin_dashboard/features/orders/data/model/order_model.dart';
 import 'package:restaurant_admin_dashboard/features/orders/presentation/BLoC/orders_bloc.dart';
+import 'package:restaurant_admin_dashboard/features/orders/presentation/BLoC/orders_event.dart';
 import 'package:restaurant_admin_dashboard/features/orders/presentation/BLoC/orders_state.dart';
-import 'package:restaurant_admin_dashboard/features/orders/presentation/UI/widgets/filters_row.dart';
-import 'package:restaurant_admin_dashboard/features/orders/presentation/UI/widgets/table.dart';
-import 'package:restaurant_admin_dashboard/features/orders/presentation/UI/widgets/order_details.dart';
+import 'package:restaurant_admin_dashboard/features/orders/presentation/UI/widgets/desktop_view.dart';
+import 'package:restaurant_admin_dashboard/features/orders/presentation/UI/widgets/mobile_view.dart';
 
 import '../../../../core/di/service_locator.dart';
-import '../../data/model/order_model.dart';
 
 class OrdersPresenter extends StatelessWidget {
   const OrdersPresenter({super.key});
@@ -41,69 +39,18 @@ class OrdersPresenter extends StatelessWidget {
 
             return Stack(
               children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.all(10.w),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Header(),
-                            SizedBox(height: 20.h),
-                            const FiltersRow(),
-                            SizedBox(height: 20.h),
-                            Expanded(
-                              child:
-                                  state is OrdersError && state.orders.isEmpty
-                                  ? Center(
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Text(
-                                            'Unable to load orders: ${state.message}',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              fontSize: 14.sp,
-                                              color: const Color(0xFFD64545),
-                                            ),
-                                          ),
-                                          SizedBox(height: 12.h),
-                                          ElevatedButton(
-                                            onPressed: () => context
-                                                .read<OrdersBloc>()
-                                                .add(LoadOrders()),
-                                            child: const Text('Retry'),
-                                          ),
-                                        ],
-                                      ),
-                                    )
-                                  : OrdersTable(
-                                      orders: displayedOrders,
-                                      selectedOrderId: selectedOrder?.id ?? state.selectedOrderId,
-                                      onOrderSelected: (orderId) {
-                                        context.read<OrdersBloc>().add(
-                                          SelectOrder(orderId: orderId),
-                                        );
-                                      },
-                                    ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    if (selectedOrder != null) SizedBox(width: 24.w),
-                    if (selectedOrder != null)
-                      Container(
-                        width: 400.w,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(color: const Color(0xFFE8E4DF)),
-                        ),
-                        child: OrderDetails(order: selectedOrder),
-                      ),
-                  ],
+                AdaptiveView(
+                  desktop: OrdersDesktopView(
+                    displayedOrders: displayedOrders,
+                    selectedOrderId:
+                        selectedOrder?.id ?? state.selectedOrderId,
+                    selectedOrder: selectedOrder,
+                    state: state,
+                  ),
+                  mobile: OrdersMobileView(
+                    displayedOrders: displayedOrders,
+                    state: state,
+                  ),
                 ),
                 if (state is OrdersLoading && state.orders.isEmpty) Loading(),
               ],

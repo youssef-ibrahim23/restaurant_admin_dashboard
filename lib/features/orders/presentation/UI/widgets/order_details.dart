@@ -8,9 +8,9 @@ import 'package:restaurant_admin_dashboard/features/orders/presentation/BLoC/ord
 
 class OrderDetails extends StatelessWidget {
   final OrderModel order;
+  final VoidCallback? onStatusUpdated;
 
-
-  const OrderDetails({super.key, required this.order});
+  const OrderDetails({super.key, required this.order, this.onStatusUpdated});
 
   @override
   Widget build(BuildContext context) {
@@ -205,6 +205,7 @@ class OrderDetails extends StatelessWidget {
         OutlinedButton(
           onPressed: () {
             context.read<OrdersBloc>().add(UpdateStatus(orderId: order.id, status: 'Cancelled'));
+            onStatusUpdated?.call();
           },
           style: OutlinedButton.styleFrom(
             foregroundColor: const Color(0xFFD64545),
@@ -248,12 +249,18 @@ class OrderDetails extends StatelessWidget {
       orElse: () => 'Pending',
     );
 
+    final textScale = MediaQuery.sizeOf(context).width < 900 ? 1.8 : 1.0;
+
     showDialog(
       context: context,
       builder: (dialogContext) {
         return StatefulBuilder(
           builder: (builderContext, setDialogState) {
-            return AlertDialog(
+            return MediaQuery(
+              data: MediaQuery.of(dialogContext).copyWith(
+                textScaler: TextScaler.linear(textScale),
+              ),
+              child: AlertDialog(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16.r),
               ),
@@ -333,6 +340,7 @@ class OrderDetails extends StatelessWidget {
                     onPressed: () {
                       context.read<OrdersBloc>().add(UpdateStatus(orderId: order.id, status: selectedStatus));
                       Navigator.pop(dialogContext, selectedStatus);
+                      onStatusUpdated?.call();
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primaryColor,
@@ -352,11 +360,12 @@ class OrderDetails extends StatelessWidget {
                   ),
                 ),
               ],
-            );
-          },
-        );
-      },
-    );
+            ),
+          );
+        },
+      );
+    },
+  );
   }
 
 
