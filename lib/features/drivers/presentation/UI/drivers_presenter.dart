@@ -51,7 +51,7 @@ class DriversPresenter extends StatelessWidget {
                             // Right panel - Map
                             Expanded(
                               flex: 1,
-                              child: const DriversMap(),
+                              child: DriversMap(drivers: state.drivers),
                             ),
                           ],
                         ),
