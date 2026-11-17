@@ -1,9 +1,11 @@
+
 name: Deploy Flutter Web
 
 on:
   push:
     branches:
-      - ci/cd-deployment
+      - develop
+
   workflow_dispatch:
 
 permissions:
